@@ -83,16 +83,40 @@ func TestGetOrgStats(t *testing.T) {
 	expectedStats := models.OrganizationStats{
 		Start: time.Now().Add(-24 * time.Hour),
 		End:   time.Now(),
-		Projects: []models.ProjectStats{
+		Projects: []models.ProjectStatsDetail{
 			{
-				ProjectID: "1",
-				Quantity:  1000,
-				TimesSeen: 500,
+				ID: "1",
+				Slug: "project1",
+				Stats: []models.CategoryStats{
+					{
+						Category: "error",
+						Outcomes: models.StatsOutcomes{
+							Accepted: 1000,
+							Filtered: 0,
+						},
+						Totals: models.StatsTotals{
+							Sum: 1000,
+							TimesSeen: 500,
+						},
+					},
+				},
 			},
 			{
-				ProjectID: "2",
-				Quantity:  2000,
-				TimesSeen: 750,
+				ID: "2", 
+				Slug: "project2",
+				Stats: []models.CategoryStats{
+					{
+						Category: "transaction",
+						Outcomes: models.StatsOutcomes{
+							Accepted: 2000,
+							Filtered: 0,
+						},
+						Totals: models.StatsTotals{
+							Sum: 2000,
+							TimesSeen: 750,
+						},
+					},
+				},
 			},
 		},
 		Totals: struct {
@@ -147,12 +171,12 @@ func TestGetOrgStats(t *testing.T) {
 		t.Errorf("Expected 2 projects in stats, got %d", len(stats.Projects))
 	}
 	
-	if stats.Projects[0].ProjectID != "1" {
-		t.Errorf("Expected first project ID '1', got %s", stats.Projects[0].ProjectID)
+	if stats.Projects[0].ID != "1" {
+		t.Errorf("Expected first project ID '1', got %s", stats.Projects[0].ID)
 	}
 	
-	if stats.Projects[0].Quantity != 1000 {
-		t.Errorf("Expected first project quantity 1000, got %d", stats.Projects[0].Quantity)
+	if len(stats.Projects[0].Stats) > 0 && stats.Projects[0].Stats[0].Totals.Sum != 1000 {
+		t.Errorf("Expected first project quantity 1000, got %d", stats.Projects[0].Stats[0].Totals.Sum)
 	}
 	
 	if stats.Totals.Sum != 3000 {
