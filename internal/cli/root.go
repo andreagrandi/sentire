@@ -5,11 +5,13 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"sentire/internal/version"
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "sentire",
-	Short: "A command-line tool for the Sentry API",
+	Use:     "sentire",
+	Short:   "A command-line tool for the Sentry API",
+	Version: version.Version,
 	Long: `Sentire is a simple and user-friendly command-line interface for interacting with the Sentry API.
 It allows you to query events, issues, projects, and organizations directly from your terminal.
 

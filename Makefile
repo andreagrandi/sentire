@@ -3,15 +3,20 @@
 # Default target
 all: build
 
+# Variables for version injection
+BUILD_TIME := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
+GIT_COMMIT := $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+LDFLAGS := -X sentire/internal/version.BuildTime=$(BUILD_TIME) -X sentire/internal/version.GitCommit=$(GIT_COMMIT)
+
 # Build the application
 build:
 	@echo "Building sentire..."
-	@go build -o sentire ./cmd/sentire
+	@go build -ldflags="$(LDFLAGS)" -o sentire ./cmd/sentire
 
 # Build with version information
 build-release:
 	@echo "Building sentire with version info..."
-	@go build -ldflags="-s -w" -o sentire ./cmd/sentire
+	@go build -ldflags="$(LDFLAGS) -s -w" -o sentire ./cmd/sentire
 
 # Run tests
 test:
@@ -56,10 +61,10 @@ install: build
 # Cross-compile for multiple platforms
 build-all:
 	@echo "Building for multiple platforms..."
-	@GOOS=linux GOARCH=amd64 go build -o sentire-linux-amd64 ./cmd/sentire
-	@GOOS=darwin GOARCH=amd64 go build -o sentire-darwin-amd64 ./cmd/sentire
-	@GOOS=darwin GOARCH=arm64 go build -o sentire-darwin-arm64 ./cmd/sentire
-	@GOOS=windows GOARCH=amd64 go build -o sentire-windows-amd64.exe ./cmd/sentire
+	@GOOS=linux GOARCH=amd64 go build -ldflags="$(LDFLAGS)" -o sentire-linux-amd64 ./cmd/sentire
+	@GOOS=darwin GOARCH=amd64 go build -ldflags="$(LDFLAGS)" -o sentire-darwin-amd64 ./cmd/sentire
+	@GOOS=darwin GOARCH=arm64 go build -ldflags="$(LDFLAGS)" -o sentire-darwin-arm64 ./cmd/sentire
+	@GOOS=windows GOARCH=amd64 go build -ldflags="$(LDFLAGS)" -o sentire-windows-amd64.exe ./cmd/sentire
 
 # Show help
 help:
