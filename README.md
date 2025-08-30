@@ -1,5 +1,7 @@
 # Sentire
 
+<img src="sentire_logo.png" width="50%" alt="Sentire">
+
 A simple and user-friendly command-line interface for the Sentry API, written in Go.
 
 ## Overview
