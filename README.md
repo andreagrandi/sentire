@@ -30,6 +30,29 @@ cd sentire
 go build -o sentire ./cmd/sentire
 ```
 
+## Development Setup
+
+### Git Hooks
+
+To prevent formatting issues and ensure code quality, install the Git hooks:
+
+```bash
+# Install pre-commit hook for automatic Go formatting
+./scripts/install-hooks.sh
+```
+
+The pre-commit hook will automatically format Go files using `gofmt -s` before each commit, ensuring consistency with CI requirements.
+
+To format all Go files manually:
+```bash
+make fmt
+```
+
+To bypass the hook temporarily (not recommended):
+```bash
+git commit --no-verify
+```
+
 ## Configuration
 
 Before using sentire, you must set your Sentry API token as an environment variable:
