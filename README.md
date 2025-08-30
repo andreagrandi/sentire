@@ -19,10 +19,27 @@ Sentire provides an intuitive CLI for interacting with Sentry's API. It covers t
 
 ### Prerequisites
 
-- Go 1.25 or later
 - A Sentry API token with appropriate permissions
 
+### Using Homebrew (macOS)
+
+```bash
+brew install andreagrandi/tap/sentire
+```
+
+### Using Go install
+
+```bash
+go install github.com/andreagrandi/sentire/cmd/sentire@latest
+```
+
+### Download pre-built binaries
+
+Download the latest release for your platform from the [releases page](https://github.com/andreagrandi/sentire/releases).
+
 ### Building from source
+
+Prerequisites: Go 1.25 or later
 
 ```bash
 git clone <repository-url>
