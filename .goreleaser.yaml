@@ -1,0 +1,78 @@
+version: 2
+
+project_name: sentire
+
+before:
+  hooks:
+    - go mod tidy
+    - go generate ./...
+
+builds:
+  - main: ./cmd/sentire/main.go
+    binary: sentire
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+    ldflags:
+      - -s -w -X sentire/internal/version.Version={{.Version}}
+
+archives:
+  - name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - README.md
+      - LICENSE
+
+checksum:
+  name_template: 'checksums.txt'
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^ci:'
+      - Merge pull request
+      - Merge branch
+      - go mod tidy
+
+release:
+  name_template: "Release v{{ .Version }}"
+  draft: false
+  prerelease: auto
+
+brews:
+  - name: sentire
+    repository:
+      owner: andreagrandi
+      name: homebrew-tap
+      token: "{{ .Env.GORELEASER_GITHUB_TOKEN }}"
+    commit_author:
+      name: goreleaserbot
+      email: goreleaser@github.com
+    directory: Formula
+    homepage: "https://github.com/andreagrandi/sentire"
+    description: "Sentire - A CLI tool for the Sentry API"
+    license: "MIT"
+    test: |
+      system "#{bin}/sentire --version"
+    install: |
+      bin.install "sentire"
