@@ -8,6 +8,13 @@ A simple and user-friendly command-line interface for the Sentry API, written in
 
 Sentire provides an intuitive CLI for interacting with Sentry's API. It covers the essential Sentry operations including managing events, issues, projects, and organizations.
 
+**Key Features:**
+- Multiple output formats: JSON, table, text, and markdown
+- Comprehensive API coverage for debugging workflows
+- Built-in pagination and rate limiting
+- Human-readable output for terminal usage
+- Machine-readable JSON for scripting
+
 ## Installation
 
 ### Prerequisites
@@ -76,13 +83,54 @@ sentire events get-issue <organization> <issue-id>
 sentire events get-issue-event <organization> <issue-id> latest
 ```
 
+### URL Inspection
+
+Sentire includes a special `inspect` command that can parse Sentry URLs directly:
+
+```bash
+# Inspect a Sentry issue URL and get detailed event information
+sentire inspect "https://sentry.io/organizations/my-org/issues/123456789/"
+
+# Get inspection results in table format
+sentire inspect "https://sentry.io/organizations/my-org/issues/123456789/" --format table
+
+# Get inspection results in markdown for documentation
+sentire inspect "https://sentry.io/organizations/my-org/issues/123456789/" --format markdown
+```
+
+This command automatically extracts the organization and issue ID from the URL and fetches the most relevant debugging information.
+
 ### Command Options
 
 Most list commands support these common options:
 
 - `--all`: Fetch all pages of results (default: single page)
-- `--format json`: Output format (currently supports JSON)
+- `--format <format>`: Output format (json, table, text, markdown) - default: json
 - `--verbose`: Enable verbose output
+
+#### Output Formats
+
+Sentire supports multiple output formats to suit different use cases:
+
+- **`json`** (default): Machine-readable JSON format, ideal for scripting and automation
+- **`table`**: Human-readable table format with borders, perfect for terminal viewing
+- **`text`**: Clean plain text format, great for simple parsing and readability
+- **`markdown`**: Documentation-friendly markdown format, useful for reports and documentation
+
+**Format Examples:**
+```bash
+# Default JSON output
+sentire events list-issues my-org
+
+# Human-readable table format
+sentire events list-issues my-org --format table
+
+# Simple text format
+sentire projects list --format text
+
+# Markdown for documentation
+sentire org stats my-org --format markdown
+```
 
 #### Time-based Filtering
 
@@ -102,25 +150,71 @@ Many commands support time filtering options:
 ### List recent high-priority issues
 
 ```bash
+# JSON output (default)
 sentire events list-issues my-org --query="is:unresolved issue.priority:[high,medium]" --period=7d
+
+# Table format for better readability
+sentire events list-issues my-org --query="is:unresolved issue.priority:[high,medium]" --period=7d --format table
 ```
 
 ### Get all events for a project in the last 24 hours
 
 ```bash
-sentire events list-project my-org my-project --period=24h --all --full
+# Get all events with table format
+sentire events list-project my-org my-project --period=24h --all --full --format table
 ```
 
 ### Get organization statistics for the last week
 
 ```bash
-sentire org stats my-org --field="sum(quantity)" --period=7d --project=123 --project=456
+# Statistics in markdown format for reports
+sentire org stats my-org --field="sum(quantity)" --period=7d --project=123 --project=456 --format markdown
 ```
 
 ### List issues in production environment
 
 ```bash
-sentire events list-issues my-org --environment=production --period=24h
+# Production issues in text format
+sentire events list-issues my-org --environment=production --period=24h --format text
+```
+
+### Output Format Comparison
+
+**Table format** (great for terminal viewing):
+```
+┌──────┬─────────────────────┬───────┬──────────┬─────────┬──────────────────┐
+│  ID  │        TITLE        │ LEVEL │ STATUS   │  COUNT  │   LAST SEEN      │
+├──────┼─────────────────────┼───────┼──────────┼─────────┼──────────────────┤
+│ 1234 │ TypeError in login  │ error │ unresov. │   45    │ 2025-08-30 10:15 │
+│ 1235 │ API timeout         │ warn  │ resolved │   12    │ 2025-08-30 09:30 │
+└──────┴─────────────────────┴───────┴──────────┴─────────┴──────────────────┘
+```
+
+**Text format** (simple and scriptable):
+```
+Issues (2 total):
+
+1. Issue #1234
+   Title: TypeError in login component
+   Level: error | Status: unresolved | Count: 45
+   Project: web-app | Users: 23
+   Last Seen: 2025-08-30 10:15
+
+2. Issue #1235
+   Title: API timeout on user endpoint
+   Level: warning | Status: resolved | Count: 12
+   Project: api-service | Users: 8
+   Last Seen: 2025-08-30 09:30
+```
+
+**Markdown format** (documentation-ready):
+```markdown
+# Issues (2 total)
+
+| ID | Title | Level | Status | Count | Users | Last Seen | Project |
+|----|-------|-------|--------|-------|-------|-----------|---------|
+| 1234 | TypeError in login... | error | unresolved | 45 | 23 | 08-30 10:15 | web-app |
+| 1235 | API timeout on use... | warning | resolved | 12 | 8 | 08-30 09:30 | api-service |
 ```
 
 ## API Coverage
@@ -182,7 +276,7 @@ Licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 Future enhancements may include:
 
-- Table output format for better readability
+- ✅ **Multiple output formats** (JSON, table, text, markdown) - **COMPLETED**
 - Configuration file support
 - Additional Sentry API endpoints
 - Webhook management
@@ -190,3 +284,5 @@ Future enhancements may include:
 - Performance monitoring queries
 - Export functionality (CSV, JSON files)
 - Interactive mode for complex queries
+- Custom output format templates
+- Shell auto-completion support

@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"sentire/internal/api"
 	"sentire/internal/client"
+	"sentire/internal/cli/formatter"
 
 	"github.com/spf13/cobra"
 )
@@ -86,5 +87,5 @@ func runInspect(cmd *cobra.Command, args []string) error {
 	}
 
 	// Output the event data
-	return outputJSON(event)
+	return formatter.Output(cmd, event)
 }

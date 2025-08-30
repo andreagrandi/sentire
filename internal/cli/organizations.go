@@ -3,6 +3,7 @@ package cli
 import (
 	"sentire/internal/api"
 	"sentire/internal/client"
+	"sentire/internal/cli/formatter"
 
 	"github.com/spf13/cobra"
 )
@@ -87,7 +88,7 @@ func runListOrgProjects(cmd *cobra.Command, args []string) error {
 		cursor = pagination.NextCursor
 	}
 
-	return outputJSON(allProjects)
+	return formatter.Output(cmd, allProjects)
 }
 
 func runGetOrgStats(cmd *cobra.Command, args []string) error {
@@ -137,5 +138,5 @@ func runGetOrgStats(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	return outputJSON(stats)
+	return formatter.Output(cmd, stats)
 }

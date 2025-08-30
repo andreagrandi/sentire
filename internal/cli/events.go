@@ -1,10 +1,9 @@
 package cli
 
 import (
-	"encoding/json"
-	"os"
 	"sentire/internal/api"
 	"sentire/internal/client"
+	"sentire/internal/cli/formatter"
 
 	"github.com/spf13/cobra"
 )
@@ -158,7 +157,7 @@ func runListProjectEvents(cmd *cobra.Command, args []string) error {
 		cursor = pagination.NextCursor
 	}
 
-	return outputJSON(allEvents)
+	return formatter.Output(cmd, allEvents)
 }
 
 func runListIssueEvents(cmd *cobra.Command, args []string) error {
@@ -219,7 +218,7 @@ func runListIssueEvents(cmd *cobra.Command, args []string) error {
 		cursor = pagination.NextCursor
 	}
 
-	return outputJSON(allEvents)
+	return formatter.Output(cmd, allEvents)
 }
 
 func runListIssues(cmd *cobra.Command, args []string) error {
@@ -283,7 +282,7 @@ func runListIssues(cmd *cobra.Command, args []string) error {
 		cursor = pagination.NextCursor
 	}
 
-	return outputJSON(allIssues)
+	return formatter.Output(cmd, allIssues)
 }
 
 func runGetEvent(cmd *cobra.Command, args []string) error {
@@ -300,7 +299,7 @@ func runGetEvent(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	return outputJSON(event)
+	return formatter.Output(cmd, event)
 }
 
 func runGetIssue(cmd *cobra.Command, args []string) error {
@@ -317,7 +316,7 @@ func runGetIssue(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	return outputJSON(issue)
+	return formatter.Output(cmd, issue)
 }
 
 func runGetIssueEvent(cmd *cobra.Command, args []string) error {
@@ -340,11 +339,6 @@ func runGetIssueEvent(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	return outputJSON(event)
+	return formatter.Output(cmd, event)
 }
 
-func outputJSON(data interface{}) error {
-	encoder := json.NewEncoder(os.Stdout)
-	encoder.SetIndent("", "  ")
-	return encoder.Encode(data)
-}
