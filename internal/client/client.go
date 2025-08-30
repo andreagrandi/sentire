@@ -28,10 +28,10 @@ type Client struct {
 
 // RateLimiter tracks rate limit information
 type RateLimiter struct {
-	Limit           int
-	Remaining       int
-	Reset           time.Time
-	ConcurrentLimit int
+	Limit               int
+	Remaining           int
+	Reset               time.Time
+	ConcurrentLimit     int
 	ConcurrentRemaining int
 }
 
@@ -117,11 +117,11 @@ func (c *Client) Get(endpoint string, params url.Values) (*Response, error) {
 // DecodeJSON decodes JSON response into the provided interface
 func (c *Client) DecodeJSON(resp *Response, v interface{}) error {
 	defer resp.Body.Close()
-	
+
 	if err := json.NewDecoder(resp.Body).Decode(v); err != nil {
 		return fmt.Errorf("failed to decode JSON response: %w", err)
 	}
-	
+
 	return nil
 }
 
@@ -161,7 +161,7 @@ func (c *Client) parseRateLimitHeaders(resp *http.Response) {
 // parseLinkHeader parses the Link header for pagination information
 func (c *Client) parseLinkHeader(linkHeader string) *PaginationInfo {
 	info := &PaginationInfo{}
-	
+
 	if linkHeader == "" {
 		return info
 	}
@@ -175,11 +175,11 @@ func (c *Client) parseLinkHeader(linkHeader string) *PaginationInfo {
 		}
 
 		urlPart := strings.Trim(strings.TrimSpace(parts[0]), "<>")
-		
+
 		// Extract cursor from URL
 		if u, err := url.Parse(urlPart); err == nil {
 			cursor := u.Query().Get("cursor")
-			
+
 			// Check all parts for rel and results attributes
 			var isNext, isPrev, hasResults bool
 			for i := 1; i < len(parts); i++ {
@@ -193,7 +193,7 @@ func (c *Client) parseLinkHeader(linkHeader string) *PaginationInfo {
 					hasResults = true
 				}
 			}
-			
+
 			if isNext {
 				info.NextCursor = cursor
 				info.HasNext = hasResults

@@ -13,53 +13,53 @@ import (
 func TestParseSentryURL(t *testing.T) {
 	// We can't directly test the private function, but we can test through the CLI
 	// This is more of an integration test
-	
+
 	testCases := []struct {
-		name      string
-		url       string
-		shouldErr bool
-		expectedOrg string
+		name            string
+		url             string
+		shouldErr       bool
+		expectedOrg     string
 		expectedIssueID string
 	}{
 		{
-			name: "Valid URL with query params",
-			url: "https://laterpay.sentry.io/issues/6796439331/?alert_rule_id=15057217&alert_type=issue",
-			shouldErr: false,
-			expectedOrg: "laterpay",
+			name:            "Valid URL with query params",
+			url:             "https://laterpay.sentry.io/issues/6796439331/?alert_rule_id=15057217&alert_type=issue",
+			shouldErr:       false,
+			expectedOrg:     "laterpay",
 			expectedIssueID: "6796439331",
 		},
 		{
-			name: "Valid URL without query params",
-			url: "https://laterpay.sentry.io/issues/6796439331/",
-			shouldErr: false,
-			expectedOrg: "laterpay",
+			name:            "Valid URL without query params",
+			url:             "https://laterpay.sentry.io/issues/6796439331/",
+			shouldErr:       false,
+			expectedOrg:     "laterpay",
 			expectedIssueID: "6796439331",
 		},
 		{
-			name: "Valid URL without trailing slash",
-			url: "https://testorg.sentry.io/issues/123456789",
-			shouldErr: false,
-			expectedOrg: "testorg",
+			name:            "Valid URL without trailing slash",
+			url:             "https://testorg.sentry.io/issues/123456789",
+			shouldErr:       false,
+			expectedOrg:     "testorg",
 			expectedIssueID: "123456789",
 		},
 		{
-			name: "Invalid domain",
-			url: "https://laterpay.notsentry.io/issues/123/",
+			name:      "Invalid domain",
+			url:       "https://laterpay.notsentry.io/issues/123/",
 			shouldErr: true,
 		},
 		{
-			name: "Invalid path",
-			url: "https://laterpay.sentry.io/not-issues/123/",
+			name:      "Invalid path",
+			url:       "https://laterpay.sentry.io/not-issues/123/",
 			shouldErr: true,
 		},
 		{
-			name: "No issue ID",
-			url: "https://laterpay.sentry.io/issues/",
+			name:      "No issue ID",
+			url:       "https://laterpay.sentry.io/issues/",
 			shouldErr: true,
 		},
 		{
-			name: "Non-numeric issue ID",
-			url: "https://laterpay.sentry.io/issues/abc/",
+			name:      "Non-numeric issue ID",
+			url:       "https://laterpay.sentry.io/issues/abc/",
 			shouldErr: true,
 		},
 	}
@@ -69,13 +69,13 @@ func TestParseSentryURL(t *testing.T) {
 			// Since we can't directly test the private parseSentryURL function,
 			// we test it indirectly by checking if the inspect command would succeed or fail
 			// This is actually a better integration test
-			
+
 			if tc.shouldErr {
 				// For error cases, we just verify the expected behavior exists
 				// The actual CLI testing is done in the main test below
 				t.Logf("Error case test passed: %s", tc.name)
 			} else {
-				t.Logf("Success case test passed: %s (org: %s, issue: %s)", 
+				t.Logf("Success case test passed: %s (org: %s, issue: %s)",
 					tc.name, tc.expectedOrg, tc.expectedIssueID)
 			}
 		})
@@ -94,7 +94,7 @@ func TestInspectCommandIntegration(t *testing.T) {
 		Type:        "error",
 		DateCreated: time.Now(),
 		Culprit:     "/test/endpoint",
-		
+
 		// Add some debugging info
 		Entries: []models.Entry{
 			{
@@ -109,15 +109,15 @@ func TestInspectCommandIntegration(t *testing.T) {
 				},
 			},
 		},
-		
+
 		Tags: []models.EventTag{
 			{Key: "environment", Value: "test"},
 			{Key: "level", Value: "error"},
 		},
-		
+
 		User: &models.EventUser{
-			ID:       "test-user",
-			Email:    "test@example.com",
+			ID:    "test-user",
+			Email: "test@example.com",
 		},
 	}
 
@@ -135,7 +135,7 @@ func TestInspectCommandIntegration(t *testing.T) {
 	defer os.Unsetenv("SENTRY_API_TOKEN")
 
 	eventsAPI := api.NewEventsAPI(c)
-	
+
 	// Test that the inspect logic would work
 	// (We can't easily test the CLI command directly in this test framework,
 	// but we can test the underlying API call it makes)
@@ -143,28 +143,28 @@ func TestInspectCommandIntegration(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GetIssueEvent failed: %v", err)
 	}
-	
+
 	if event.ID != "test-event-123" {
 		t.Errorf("Expected event ID 'test-event-123', got %s", event.ID)
 	}
-	
+
 	if event.Title != "Test Event from Inspect" {
 		t.Errorf("Expected title 'Test Event from Inspect', got %s", event.Title)
 	}
-	
+
 	if event.GroupID != "6796439331" {
 		t.Errorf("Expected group ID '6796439331', got %s", event.GroupID)
 	}
-	
+
 	// Verify debugging info is present
 	if len(event.Entries) == 0 {
 		t.Error("Expected entries to be present")
 	}
-	
+
 	if len(event.Tags) != 2 {
 		t.Errorf("Expected 2 tags, got %d", len(event.Tags))
 	}
-	
+
 	if event.User == nil {
 		t.Error("Expected user information to be present")
 	} else if event.User.Email != "test@example.com" {

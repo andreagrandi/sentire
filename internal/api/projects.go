@@ -25,7 +25,7 @@ type ListAllProjectsOptions struct {
 // ListProjects retrieves all projects the user has access to
 func (p *ProjectsAPI) ListProjects(opts *ListAllProjectsOptions) ([]models.Project, *client.PaginationInfo, error) {
 	endpoint := "/projects/"
-	
+
 	params := url.Values{}
 	if opts != nil && opts.Cursor != "" {
 		params.Set("cursor", opts.Cursor)
@@ -47,7 +47,7 @@ func (p *ProjectsAPI) ListProjects(opts *ListAllProjectsOptions) ([]models.Proje
 // GetProject retrieves a specific project
 func (p *ProjectsAPI) GetProject(orgSlug, projectSlug string) (*models.Project, error) {
 	endpoint := fmt.Sprintf("/projects/%s/%s/", orgSlug, projectSlug)
-	
+
 	resp, err := p.client.Get(endpoint, nil)
 	if err != nil {
 		return nil, err

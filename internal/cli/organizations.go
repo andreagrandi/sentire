@@ -2,8 +2,8 @@ package cli
 
 import (
 	"sentire/internal/api"
-	"sentire/internal/client"
 	"sentire/internal/cli/formatter"
+	"sentire/internal/client"
 
 	"github.com/spf13/cobra"
 )
@@ -32,7 +32,7 @@ var getOrgStatsCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(orgCmd)
-	
+
 	orgCmd.AddCommand(listOrgProjectsCmd)
 	orgCmd.AddCommand(getOrgStatsCmd)
 
@@ -63,7 +63,7 @@ func runListOrgProjects(cmd *cobra.Command, args []string) error {
 	orgAPI := api.NewOrganizationsAPI(c)
 
 	fetchAll, _ := cmd.Flags().GetBool("all")
-	
+
 	var allProjects []interface{}
 	cursor := ""
 

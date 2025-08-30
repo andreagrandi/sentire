@@ -5,8 +5,8 @@ import (
 	"net/url"
 	"regexp"
 	"sentire/internal/api"
-	"sentire/internal/client"
 	"sentire/internal/cli/formatter"
+	"sentire/internal/client"
 
 	"github.com/spf13/cobra"
 )

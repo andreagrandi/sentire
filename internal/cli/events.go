@@ -2,8 +2,8 @@ package cli
 
 import (
 	"sentire/internal/api"
-	"sentire/internal/client"
 	"sentire/internal/cli/formatter"
+	"sentire/internal/client"
 
 	"github.com/spf13/cobra"
 )
@@ -64,7 +64,7 @@ var getIssueEventCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(eventsCmd)
-	
+
 	eventsCmd.AddCommand(listProjectEventsCmd)
 	eventsCmd.AddCommand(listIssueEventsCmd)
 	eventsCmd.AddCommand(listIssuesCmd)
@@ -133,7 +133,7 @@ func runListProjectEvents(cmd *cobra.Command, args []string) error {
 	}
 
 	fetchAll, _ := cmd.Flags().GetBool("all")
-	
+
 	var allEvents []interface{}
 	cursor := ""
 
@@ -194,7 +194,7 @@ func runListIssueEvents(cmd *cobra.Command, args []string) error {
 	}
 
 	fetchAll, _ := cmd.Flags().GetBool("all")
-	
+
 	var allEvents []interface{}
 	cursor := ""
 
@@ -258,7 +258,7 @@ func runListIssues(cmd *cobra.Command, args []string) error {
 	}
 
 	fetchAll, _ := cmd.Flags().GetBool("all")
-	
+
 	var allIssues []interface{}
 	cursor := ""
 
@@ -341,4 +341,3 @@ func runGetIssueEvent(cmd *cobra.Command, args []string) error {
 
 	return formatter.Output(cmd, event)
 }
-

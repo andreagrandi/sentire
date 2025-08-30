@@ -22,35 +22,35 @@ type Project struct {
 	Organization Organization  `json:"organization"`
 	Team         *ProjectTeam  `json:"team,omitempty"`
 	Teams        []ProjectTeam `json:"teams"`
-	
+
 	// Event processing
 	FirstTransactionEvent bool `json:"firstTransactionEvent,omitempty"`
-	ProcessingIssues     int  `json:"processingIssues,omitempty"`
-	
+	ProcessingIssues      int  `json:"processingIssues,omitempty"`
+
 	// Capability flags
 	HasMinifiedStackTrace bool `json:"hasMinifiedStackTrace,omitempty"`
-	HasFeedbacks         bool `json:"hasFeedbacks,omitempty"`
-	HasMonitors          bool `json:"hasMonitors,omitempty"`
-	HasProfiles          bool `json:"hasProfiles,omitempty"`
-	HasReplays           bool `json:"hasReplays,omitempty"`
-	HasSessions          bool `json:"hasSessions,omitempty"`
-	
+	HasFeedbacks          bool `json:"hasFeedbacks,omitempty"`
+	HasMonitors           bool `json:"hasMonitors,omitempty"`
+	HasProfiles           bool `json:"hasProfiles,omitempty"`
+	HasReplays            bool `json:"hasReplays,omitempty"`
+	HasSessions           bool `json:"hasSessions,omitempty"`
+
 	// Insights capability flags
-	HasInsightsHttp      bool `json:"hasInsightsHttp,omitempty"`
-	HasInsightsDb        bool `json:"hasInsightsDb,omitempty"`
-	HasInsightsAssets    bool `json:"hasInsightsAssets,omitempty"`
-	HasInsightsCaches    bool `json:"hasInsightsCaches,omitempty"`
-	HasInsightsQueues    bool `json:"hasInsightsQueues,omitempty"`
-	HasInsightsVitals    bool `json:"hasInsightsVitals,omitempty"`
+	HasInsightsHttp          bool `json:"hasInsightsHttp,omitempty"`
+	HasInsightsDb            bool `json:"hasInsightsDb,omitempty"`
+	HasInsightsAssets        bool `json:"hasInsightsAssets,omitempty"`
+	HasInsightsCaches        bool `json:"hasInsightsCaches,omitempty"`
+	HasInsightsQueues        bool `json:"hasInsightsQueues,omitempty"`
+	HasInsightsVitals        bool `json:"hasInsightsVitals,omitempty"`
 	HasInsightsLlmMonitoring bool `json:"hasInsightsLlmMonitoring,omitempty"`
-	
+
 	// Additional metadata
-	LatestRelease *ProjectRelease `json:"latestRelease,omitempty"`
-	Options       map[string]interface{} `json:"options,omitempty"`
-	ResolveAge    *int           `json:"resolveAge,omitempty"`
-	DataScrubber  bool          `json:"dataScrubber,omitempty"`
-	SensitiveFields []string    `json:"sensitiveFields,omitempty"`
-	GroupingConfig  string      `json:"groupingConfig,omitempty"`
+	LatestRelease   *ProjectRelease        `json:"latestRelease,omitempty"`
+	Options         map[string]interface{} `json:"options,omitempty"`
+	ResolveAge      *int                   `json:"resolveAge,omitempty"`
+	DataScrubber    bool                   `json:"dataScrubber,omitempty"`
+	SensitiveFields []string               `json:"sensitiveFields,omitempty"`
+	GroupingConfig  string                 `json:"groupingConfig,omitempty"`
 }
 
 // ProjectTeam represents team information

@@ -21,7 +21,7 @@ func NewMarkdownFormatter(writer io.Writer) *MarkdownFormatter {
 // FormatEvent formats a single event as markdown
 func (f *MarkdownFormatter) FormatEvent(event *models.Event) error {
 	fmt.Fprintf(f.writer, "# Event Details\n\n")
-	
+
 	fmt.Fprintf(f.writer, "**ID**: %s  \n", event.ID)
 	fmt.Fprintf(f.writer, "**Event ID**: %s  \n", event.EventID)
 	fmt.Fprintf(f.writer, "**Title**: %s  \n", event.Title)
@@ -32,7 +32,7 @@ func (f *MarkdownFormatter) FormatEvent(event *models.Event) error {
 	fmt.Fprintf(f.writer, "**Date Created**: %s  \n", event.DateCreated.Format("2006-01-02 15:04:05"))
 	fmt.Fprintf(f.writer, "**Date Received**: %s  \n", event.DateReceived.Format("2006-01-02 15:04:05"))
 	fmt.Fprintf(f.writer, "**Size**: %d bytes  \n", event.Size)
-	
+
 	if event.GroupID != "" {
 		fmt.Fprintf(f.writer, "**Group ID**: %s  \n", event.GroupID)
 	}
@@ -70,11 +70,11 @@ func (f *MarkdownFormatter) FormatEvents(events []models.Event) error {
 	}
 
 	fmt.Fprintf(f.writer, "# Events (%d total)\n\n", len(events))
-	
+
 	// Create markdown table
 	fmt.Fprintf(f.writer, "| ID | Title | Type | Platform | Project ID | Date | Environment |\n")
 	fmt.Fprintf(f.writer, "|----|----|----|----|----|----|----|\n")
-	
+
 	for _, event := range events {
 		fmt.Fprintf(f.writer, "| %s | %s | %s | %s | %s | %s | %s |\n",
 			event.EventID,
@@ -93,39 +93,39 @@ func (f *MarkdownFormatter) FormatEvents(events []models.Event) error {
 // FormatIssue formats a single issue as markdown
 func (f *MarkdownFormatter) FormatIssue(issue *models.Issue) error {
 	fmt.Fprintf(f.writer, "# Issue Details\n\n")
-	
+
 	fmt.Fprintf(f.writer, "**ID**: %s (%s)  \n", issue.ID, issue.ShortID)
 	fmt.Fprintf(f.writer, "**Title**: %s  \n", issue.Title)
 	fmt.Fprintf(f.writer, "**Level**: %s  \n", issue.Level)
 	fmt.Fprintf(f.writer, "**Status**: %s", issue.Status)
-	
+
 	if issue.Substatus != "" {
 		fmt.Fprintf(f.writer, " (%s)", issue.Substatus)
 	}
 	fmt.Fprintf(f.writer, "  \n")
-	
+
 	if issue.Priority != "" {
 		fmt.Fprintf(f.writer, "**Priority**: %s  \n", issue.Priority)
 	}
-	
+
 	fmt.Fprintf(f.writer, "**Platform**: %s  \n", issue.Platform)
 	fmt.Fprintf(f.writer, "**Project**: %s (%s)  \n", issue.Project.Name, issue.Project.Slug)
 	fmt.Fprintf(f.writer, "**Count**: %s  \n", issue.Count)
 	fmt.Fprintf(f.writer, "**User Count**: %d  \n", issue.UserCount)
 	fmt.Fprintf(f.writer, "**First Seen**: %s  \n", issue.FirstSeen.Format("2006-01-02 15:04:05"))
 	fmt.Fprintf(f.writer, "**Last Seen**: %s  \n", issue.LastSeen.Format("2006-01-02 15:04:05"))
-	
+
 	if issue.Culprit != "" {
 		fmt.Fprintf(f.writer, "**Culprit**: %s  \n", issue.Culprit)
 	}
-	
+
 	if issue.Logger != "" {
 		fmt.Fprintf(f.writer, "**Logger**: %s  \n", issue.Logger)
 	}
-	
-	fmt.Fprintf(f.writer, "**Public**: %v | **Bookmarked**: %v | **Subscribed**: %v  \n", 
+
+	fmt.Fprintf(f.writer, "**Public**: %v | **Bookmarked**: %v | **Subscribed**: %v  \n",
 		issue.IsPublic, issue.IsBookmarked, issue.IsSubscribed)
-	
+
 	if issue.Permalink != "" {
 		fmt.Fprintf(f.writer, "**Permalink**: [%s](%s)  \n", issue.Permalink, issue.Permalink)
 	}
@@ -142,11 +142,11 @@ func (f *MarkdownFormatter) FormatIssues(issues []models.Issue) error {
 	}
 
 	fmt.Fprintf(f.writer, "# Issues (%d total)\n\n", len(issues))
-	
+
 	// Create markdown table
 	fmt.Fprintf(f.writer, "| ID | Title | Level | Status | Count | Users | Last Seen | Project |\n")
 	fmt.Fprintf(f.writer, "|----|----|----|----|----|----|----|----|\n")
-	
+
 	for _, issue := range issues {
 		fmt.Fprintf(f.writer, "| %s | %s | %s | %s | %s | %d | %s | %s |\n",
 			issue.ShortID,
@@ -166,7 +166,7 @@ func (f *MarkdownFormatter) FormatIssues(issues []models.Issue) error {
 // FormatProject formats a single project as markdown
 func (f *MarkdownFormatter) FormatProject(project *models.Project) error {
 	fmt.Fprintf(f.writer, "# Project Details\n\n")
-	
+
 	fmt.Fprintf(f.writer, "**Name**: %s  \n", project.Name)
 	fmt.Fprintf(f.writer, "**ID**: %s  \n", project.ID)
 	fmt.Fprintf(f.writer, "**Slug**: %s  \n", project.Slug)
@@ -188,11 +188,11 @@ func (f *MarkdownFormatter) FormatProjects(projects []models.Project) error {
 	}
 
 	fmt.Fprintf(f.writer, "# Projects (%d total)\n\n", len(projects))
-	
+
 	// Create markdown table
 	fmt.Fprintf(f.writer, "| Slug | Name | Platform | Organization | Status | Created |\n")
 	fmt.Fprintf(f.writer, "|----|----|----|----|----|----|\n")
-	
+
 	for _, project := range projects {
 		fmt.Fprintf(f.writer, "| %s | %s | %s | %s | %s | %s |\n",
 			project.Slug,
@@ -210,14 +210,14 @@ func (f *MarkdownFormatter) FormatProjects(projects []models.Project) error {
 // FormatOrgStats formats organization stats as markdown
 func (f *MarkdownFormatter) FormatOrgStats(stats *models.OrganizationStats) error {
 	fmt.Fprintf(f.writer, "# Organization Statistics\n\n")
-	
+
 	fmt.Fprintf(f.writer, "| Metric | Value |\n")
 	fmt.Fprintf(f.writer, "|----|----|\n")
 	fmt.Fprintf(f.writer, "| Period Start | %s |\n", stats.Start.Format("2006-01-02 15:04:05"))
 	fmt.Fprintf(f.writer, "| Period End | %s |\n", stats.End.Format("2006-01-02 15:04:05"))
 	fmt.Fprintf(f.writer, "| Total Sum | %d |\n", stats.Totals.Sum)
 	fmt.Fprintf(f.writer, "| Times Seen | %d |\n", stats.Totals.TimesSeen)
-	
+
 	if len(stats.Projects) > 0 {
 		fmt.Fprintf(f.writer, "\n## Projects (%d)\n\n", len(stats.Projects))
 		fmt.Fprintf(f.writer, "| Project | ID |\n")
@@ -238,7 +238,7 @@ func (f *MarkdownFormatter) FormatOrgStats(stats *models.OrganizationStats) erro
 // FormatGeneric formats any data as markdown
 func (f *MarkdownFormatter) FormatGeneric(data interface{}) error {
 	v := reflect.ValueOf(data)
-	
+
 	// Handle slices/arrays
 	if v.Kind() == reflect.Slice || v.Kind() == reflect.Array {
 		if v.Len() == 0 {
@@ -248,7 +248,7 @@ func (f *MarkdownFormatter) FormatGeneric(data interface{}) error {
 
 		// For slice of interface{}, try to determine the type
 		firstElem := v.Index(0).Interface()
-		
+
 		// Handle known types
 		switch firstElem.(type) {
 		case models.Event:
@@ -282,14 +282,14 @@ func (f *MarkdownFormatter) FormatGeneric(data interface{}) error {
 // formatUnknownSlice formats a slice of unknown type as markdown
 func (f *MarkdownFormatter) formatUnknownSlice(data interface{}) error {
 	v := reflect.ValueOf(data)
-	
+
 	fmt.Fprintf(f.writer, "# Data (%d items)\n\n", v.Len())
-	
+
 	for i := 0; i < v.Len(); i++ {
 		elem := v.Index(i)
 		fmt.Fprintf(f.writer, "%d. %v\n", i+1, elem.Interface())
 	}
-	
+
 	fmt.Fprintf(f.writer, "\n")
 	return nil
 }
@@ -316,11 +316,11 @@ func (f *MarkdownFormatter) formatSingleValue(data interface{}) error {
 			typeName = "Data"
 		}
 		fmt.Fprintf(f.writer, "# %s\n\n", typeName)
-		
+
 		for i := 0; i < v.NumField(); i++ {
 			field := t.Field(i)
 			value := v.Field(i)
-			
+
 			if !value.CanInterface() {
 				continue
 			}
@@ -349,4 +349,3 @@ func escapeMarkdown(s string) string {
 	)
 	return replacer.Replace(s)
 }
-

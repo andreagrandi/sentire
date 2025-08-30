@@ -2,8 +2,8 @@ package cli
 
 import (
 	"sentire/internal/api"
-	"sentire/internal/client"
 	"sentire/internal/cli/formatter"
+	"sentire/internal/client"
 
 	"github.com/spf13/cobra"
 )
@@ -32,7 +32,7 @@ var getProjectCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(projectsCmd)
-	
+
 	projectsCmd.AddCommand(listProjectsCmd)
 	projectsCmd.AddCommand(getProjectCmd)
 
@@ -49,7 +49,7 @@ func runListProjects(cmd *cobra.Command, args []string) error {
 	projectsAPI := api.NewProjectsAPI(c)
 
 	fetchAll, _ := cmd.Flags().GetBool("all")
-	
+
 	var allProjects []interface{}
 	cursor := ""
 

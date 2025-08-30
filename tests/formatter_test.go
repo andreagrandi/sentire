@@ -39,33 +39,33 @@ func TestFormatEvent(t *testing.T) {
 	}
 
 	formats := []string{"json", "table", "text", "markdown"}
-	
+
 	for _, format := range formats {
 		t.Run(format, func(t *testing.T) {
 			var buf bytes.Buffer
 			cmd := createTestCommand(format)
 			cmd.Flags().Set("format", format)
-			
+
 			formatter, err := formatter.NewFormatter(cmd, &buf)
 			if err != nil {
 				t.Fatalf("Failed to create formatter: %v", err)
 			}
-			
+
 			err = formatter.FormatEvent(event)
 			if err != nil {
 				t.Fatalf("Failed to format event: %v", err)
 			}
-			
+
 			output := buf.String()
 			if output == "" {
 				t.Errorf("Expected output for format %s, got empty string", format)
 			}
-			
+
 			// Check for key content
 			if !strings.Contains(output, "Test Error") {
 				t.Errorf("Expected output to contain event title for format %s", format)
 			}
-			
+
 			switch format {
 			case "json":
 				if !strings.Contains(output, `"title": "Test Error"`) {
@@ -91,50 +91,50 @@ func TestFormatEvent(t *testing.T) {
 // Test Issue formatting
 func TestFormatIssue(t *testing.T) {
 	issue := &models.Issue{
-		ID:      "issue-123",
-		ShortID: "SENTIRE-1",
-		Title:   "Test Issue",
-		Level:   "error",
-		Status:  "unresolved",
+		ID:       "issue-123",
+		ShortID:  "SENTIRE-1",
+		Title:    "Test Issue",
+		Level:    "error",
+		Status:   "unresolved",
 		Platform: "python",
 		Project: models.IssueProject{
 			ID:   "project-123",
 			Name: "Test Project",
 			Slug: "test-project",
 		},
-		Count:     "100",
-		UserCount: 25,
-		FirstSeen: time.Date(2025, 8, 29, 10, 0, 0, 0, time.UTC),
-		LastSeen:  time.Date(2025, 8, 30, 10, 0, 0, 0, time.UTC),
-		IsPublic:  false,
+		Count:        "100",
+		UserCount:    25,
+		FirstSeen:    time.Date(2025, 8, 29, 10, 0, 0, 0, time.UTC),
+		LastSeen:     time.Date(2025, 8, 30, 10, 0, 0, 0, time.UTC),
+		IsPublic:     false,
 		IsBookmarked: false,
 		IsSubscribed: true,
-		Permalink: "https://sentry.io/test-project/issues/123/",
+		Permalink:    "https://sentry.io/test-project/issues/123/",
 	}
 
 	formats := []string{"json", "table", "text", "markdown"}
-	
+
 	for _, format := range formats {
 		t.Run(format, func(t *testing.T) {
 			var buf bytes.Buffer
 			cmd := createTestCommand(format)
 			cmd.Flags().Set("format", format)
-			
+
 			formatter, err := formatter.NewFormatter(cmd, &buf)
 			if err != nil {
 				t.Fatalf("Failed to create formatter: %v", err)
 			}
-			
+
 			err = formatter.FormatIssue(issue)
 			if err != nil {
 				t.Fatalf("Failed to format issue: %v", err)
 			}
-			
+
 			output := buf.String()
 			if output == "" {
 				t.Errorf("Expected output for format %s, got empty string", format)
 			}
-			
+
 			// Check for key content
 			if !strings.Contains(output, "Test Issue") {
 				t.Errorf("Expected output to contain issue title for format %s", format)
@@ -146,44 +146,44 @@ func TestFormatIssue(t *testing.T) {
 // Test Project formatting
 func TestFormatProject(t *testing.T) {
 	project := &models.Project{
-		ID:   "project-123",
-		Slug: "test-project",
-		Name: "Test Project",
+		ID:       "project-123",
+		Slug:     "test-project",
+		Name:     "Test Project",
 		Platform: "python",
 		Organization: models.Organization{
 			ID:   "org-123",
 			Slug: "test-org",
 			Name: "Test Organization",
 		},
-		Status:      "active",
-		DateCreated: time.Date(2025, 8, 29, 10, 0, 0, 0, time.UTC),
-		IsPublic:    false,
+		Status:       "active",
+		DateCreated:  time.Date(2025, 8, 29, 10, 0, 0, 0, time.UTC),
+		IsPublic:     false,
 		IsBookmarked: true,
 	}
 
 	formats := []string{"json", "table", "text", "markdown"}
-	
+
 	for _, format := range formats {
 		t.Run(format, func(t *testing.T) {
 			var buf bytes.Buffer
 			cmd := createTestCommand(format)
 			cmd.Flags().Set("format", format)
-			
+
 			formatter, err := formatter.NewFormatter(cmd, &buf)
 			if err != nil {
 				t.Fatalf("Failed to create formatter: %v", err)
 			}
-			
+
 			err = formatter.FormatProject(project)
 			if err != nil {
 				t.Fatalf("Failed to format project: %v", err)
 			}
-			
+
 			output := buf.String()
 			if output == "" {
 				t.Errorf("Expected output for format %s, got empty string", format)
 			}
-			
+
 			// Check for key content
 			if !strings.Contains(output, "Test Project") {
 				t.Errorf("Expected output to contain project name for format %s", format)
@@ -217,28 +217,28 @@ func TestFormatOrgStats(t *testing.T) {
 	}
 
 	formats := []string{"json", "table", "text", "markdown"}
-	
+
 	for _, format := range formats {
 		t.Run(format, func(t *testing.T) {
 			var buf bytes.Buffer
 			cmd := createTestCommand(format)
 			cmd.Flags().Set("format", format)
-			
+
 			formatter, err := formatter.NewFormatter(cmd, &buf)
 			if err != nil {
 				t.Fatalf("Failed to create formatter: %v", err)
 			}
-			
+
 			err = formatter.FormatOrgStats(stats)
 			if err != nil {
 				t.Fatalf("Failed to format organization stats: %v", err)
 			}
-			
+
 			output := buf.String()
 			if output == "" {
 				t.Errorf("Expected output for format %s, got empty string", format)
 			}
-			
+
 			// Check for key content
 			if !strings.Contains(output, "1000") {
 				t.Errorf("Expected output to contain total sum for format %s", format)
@@ -273,28 +273,28 @@ func TestFormatEvents(t *testing.T) {
 	}
 
 	formats := []string{"json", "table", "text", "markdown"}
-	
+
 	for _, format := range formats {
 		t.Run(format, func(t *testing.T) {
 			var buf bytes.Buffer
 			cmd := createTestCommand(format)
 			cmd.Flags().Set("format", format)
-			
+
 			formatter, err := formatter.NewFormatter(cmd, &buf)
 			if err != nil {
 				t.Fatalf("Failed to create formatter: %v", err)
 			}
-			
+
 			err = formatter.FormatEvents(events)
 			if err != nil {
 				t.Fatalf("Failed to format events: %v", err)
 			}
-			
+
 			output := buf.String()
 			if output == "" {
 				t.Errorf("Expected output for format %s, got empty string", format)
 			}
-			
+
 			// Check for both events
 			if !strings.Contains(output, "First Error") || !strings.Contains(output, "Second Error") {
 				t.Errorf("Expected output to contain both event titles for format %s", format)
@@ -306,23 +306,23 @@ func TestFormatEvents(t *testing.T) {
 // Test empty data scenarios
 func TestFormatEmptyData(t *testing.T) {
 	formats := []string{"json", "table", "text", "markdown"}
-	
+
 	for _, format := range formats {
 		t.Run(format+"_empty_events", func(t *testing.T) {
 			var buf bytes.Buffer
 			cmd := createTestCommand(format)
 			cmd.Flags().Set("format", format)
-			
+
 			formatter, err := formatter.NewFormatter(cmd, &buf)
 			if err != nil {
 				t.Fatalf("Failed to create formatter: %v", err)
 			}
-			
+
 			err = formatter.FormatEvents([]models.Event{})
 			if err != nil {
 				t.Fatalf("Failed to format empty events: %v", err)
 			}
-			
+
 			output := buf.String()
 			if output == "" {
 				t.Errorf("Expected output for empty events in format %s, got empty string", format)
@@ -335,13 +335,13 @@ func TestFormatEmptyData(t *testing.T) {
 func TestUnsupportedFormat(t *testing.T) {
 	cmd := createTestCommand("xml")
 	cmd.Flags().Set("format", "xml")
-	
+
 	var buf bytes.Buffer
 	_, err := formatter.NewFormatter(cmd, &buf)
 	if err == nil {
 		t.Errorf("Expected error for unsupported format 'xml', got nil")
 	}
-	
+
 	if !strings.Contains(err.Error(), "unsupported format: xml") {
 		t.Errorf("Expected error message about unsupported format, got: %v", err)
 	}
@@ -359,15 +359,15 @@ func TestOutputFunction(t *testing.T) {
 	var buf bytes.Buffer
 	cmd := createTestCommand("json")
 	cmd.Flags().Set("format", "json")
-	
+
 	// Override output to use our buffer (this is a workaround since Output uses os.Stdout)
 	originalFormatter, _ := formatter.NewFormatter(cmd, &buf)
 	err := originalFormatter.FormatEvent(event)
-	
+
 	if err != nil {
 		t.Fatalf("Failed to format event through Output function: %v", err)
 	}
-	
+
 	output := buf.String()
 	if !strings.Contains(output, "Test Event") {
 		t.Errorf("Expected output to contain event title")

@@ -25,7 +25,7 @@ func TestCompleteEventData(t *testing.T) {
 		Size:         12345,
 		Culprit:      "test.function",
 		Logger:       "test.logger",
-		
+
 		// Stack traces and entries
 		Entries: []models.Entry{
 			{
@@ -51,7 +51,7 @@ func TestCompleteEventData(t *testing.T) {
 				},
 			},
 		},
-		
+
 		// Exception with stack trace
 		Exception: &models.Exception{
 			Values: []models.ExceptionValue{
@@ -73,7 +73,7 @@ func TestCompleteEventData(t *testing.T) {
 				},
 			},
 		},
-		
+
 		// Breadcrumbs
 		Breadcrumbs: &models.Breadcrumbs{
 			Values: []models.Breadcrumb{
@@ -86,7 +86,7 @@ func TestCompleteEventData(t *testing.T) {
 				},
 			},
 		},
-		
+
 		// Request information
 		Request: &models.Request{
 			URL:    "https://example.com/api/test",
@@ -95,7 +95,7 @@ func TestCompleteEventData(t *testing.T) {
 				"Content-Type": "application/json",
 			},
 		},
-		
+
 		// Contexts
 		Contexts: &models.Contexts{
 			Browser: &models.BrowserContext{
@@ -114,37 +114,37 @@ func TestCompleteEventData(t *testing.T) {
 				Type:    "runtime",
 			},
 		},
-		
+
 		// Tags
 		Tags: []models.EventTag{
 			{Key: "environment", Value: "test"},
 			{Key: "level", Value: "error"},
 		},
-		
+
 		// User
 		User: &models.EventUser{
 			ID:       "user123",
 			Username: "testuser",
 			Email:    "test@example.com",
 		},
-		
+
 		// Extra data
 		Extra: map[string]interface{}{
 			"custom_field": "custom_value",
 		},
-		
+
 		// Metadata
 		Metadata: map[string]interface{}{
 			"title": "Test Event",
 		},
-		
+
 		// Release info
 		Release: &models.EventRelease{
 			Version: "1.0.0",
 		},
-		
+
 		Environment: "test",
-		
+
 		// SDK
 		SDK: &models.EventSDK{
 			Name:    "sentry.python",
@@ -160,30 +160,30 @@ func TestCompleteEventData(t *testing.T) {
 	defer os.Unsetenv("SENTRY_API_TOKEN")
 
 	eventsAPI := api.NewEventsAPI(c)
-	
+
 	event, err := eventsAPI.GetProjectEvent("test-org", "test-project", "complete-event-123")
 	if err != nil {
 		t.Fatalf("GetProjectEvent failed: %v", err)
 	}
-	
+
 	// Verify basic fields
 	if event.ID != "complete-event-123" {
 		t.Errorf("Expected event ID 'complete-event-123', got %s", event.ID)
 	}
-	
+
 	if event.Culprit != "test.function" {
 		t.Errorf("Expected culprit 'test.function', got %s", event.Culprit)
 	}
-	
+
 	if event.Size != 12345 {
 		t.Errorf("Expected size 12345, got %d", event.Size)
 	}
-	
+
 	// Verify entries are captured
 	if len(event.Entries) == 0 {
 		t.Error("Expected entries to be captured")
 	}
-	
+
 	// Verify exception data
 	if event.Exception == nil {
 		t.Error("Expected exception data to be captured")
@@ -194,21 +194,21 @@ func TestCompleteEventData(t *testing.T) {
 		if exVal.Type != "ValueError" {
 			t.Errorf("Expected exception type 'ValueError', got %s", exVal.Type)
 		}
-		
+
 		if exVal.Stacktrace == nil {
 			t.Error("Expected stacktrace to be captured")
 		} else if len(exVal.Stacktrace.Frames) == 0 {
 			t.Error("Expected stack frames to be captured")
 		}
 	}
-	
+
 	// Verify breadcrumbs
 	if event.Breadcrumbs == nil {
 		t.Error("Expected breadcrumbs to be captured")
 	} else if len(event.Breadcrumbs.Values) == 0 {
 		t.Error("Expected breadcrumb values to be captured")
 	}
-	
+
 	// Verify request data
 	if event.Request == nil {
 		t.Error("Expected request data to be captured")
@@ -217,7 +217,7 @@ func TestCompleteEventData(t *testing.T) {
 			t.Errorf("Expected request URL 'https://example.com/api/test', got %s", event.Request.URL)
 		}
 	}
-	
+
 	// Verify contexts
 	if event.Contexts == nil {
 		t.Error("Expected contexts to be captured")
@@ -227,45 +227,45 @@ func TestCompleteEventData(t *testing.T) {
 		} else if event.Contexts.Browser.Name != "Chrome" {
 			t.Errorf("Expected browser name 'Chrome', got %s", event.Contexts.Browser.Name)
 		}
-		
+
 		if event.Contexts.Runtime == nil {
 			t.Error("Expected runtime context to be captured")
 		} else if event.Contexts.Runtime.Name != "CPython" {
 			t.Errorf("Expected runtime name 'CPython', got %s", event.Contexts.Runtime.Name)
 		}
 	}
-	
+
 	// Verify tags
 	if len(event.Tags) != 2 {
 		t.Errorf("Expected 2 tags, got %d", len(event.Tags))
 	}
-	
+
 	// Verify user data
 	if event.User == nil {
 		t.Error("Expected user data to be captured")
 	} else if event.User.Username != "testuser" {
 		t.Errorf("Expected username 'testuser', got %s", event.User.Username)
 	}
-	
+
 	// Verify extra data
 	if event.Extra == nil {
 		t.Error("Expected extra data to be captured")
 	} else if event.Extra["custom_field"] != "custom_value" {
 		t.Errorf("Expected custom_field 'custom_value', got %v", event.Extra["custom_field"])
 	}
-	
+
 	// Verify metadata
 	if event.Metadata == nil {
 		t.Error("Expected metadata to be captured")
 	}
-	
+
 	// Verify release
 	if event.Release == nil {
 		t.Error("Expected release data to be captured")
 	} else if event.Release.Version != "1.0.0" {
 		t.Errorf("Expected release version '1.0.0', got %s", event.Release.Version)
 	}
-	
+
 	// Verify SDK
 	if event.SDK == nil {
 		t.Error("Expected SDK data to be captured")

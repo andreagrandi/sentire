@@ -25,7 +25,7 @@ type ListProjectsOptions struct {
 // ListProjects retrieves projects for an organization
 func (o *OrganizationsAPI) ListProjects(orgSlug string, opts *ListProjectsOptions) ([]models.Project, *client.PaginationInfo, error) {
 	endpoint := fmt.Sprintf("/organizations/%s/projects/", orgSlug)
-	
+
 	params := url.Values{}
 	if opts != nil && opts.Cursor != "" {
 		params.Set("cursor", opts.Cursor)
@@ -65,10 +65,10 @@ func (o *OrganizationsAPI) GetStats(orgSlug string, opts *GetStatsOptions) (*mod
 	}
 
 	endpoint := fmt.Sprintf("/organizations/%s/stats-summary/", orgSlug)
-	
+
 	params := url.Values{}
 	params.Set("field", opts.Field)
-	
+
 	if opts.StatsPeriod != "" {
 		params.Set("statsPeriod", opts.StatsPeriod)
 	}

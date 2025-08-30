@@ -89,13 +89,13 @@ Sentire includes a special `inspect` command that can parse Sentry URLs directly
 
 ```bash
 # Inspect a Sentry issue URL and get detailed event information
-sentire inspect "https://sentry.io/organizations/my-org/issues/123456789/"
+sentire inspect "https://my-org.sentry.io/issues/123456789/"
 
 # Get inspection results in table format
-sentire inspect "https://sentry.io/organizations/my-org/issues/123456789/" --format table
+sentire inspect "https://my-org.sentry.io/issues/123456789/" --format table
 
 # Get inspection results in markdown for documentation
-sentire inspect "https://sentry.io/organizations/my-org/issues/123456789/" --format markdown
+sentire inspect "https://my-org.sentry.io/issues/123456789/" --format markdown
 ```
 
 This command automatically extracts the organization and issue ID from the URL and fetches the most relevant debugging information.

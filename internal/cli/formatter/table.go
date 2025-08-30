@@ -252,7 +252,7 @@ func (f *TableFormatter) FormatOrgStats(stats *models.OrganizationStats) error {
 // FormatGeneric formats any data as a table by reflecting on its structure
 func (f *TableFormatter) FormatGeneric(data interface{}) error {
 	v := reflect.ValueOf(data)
-	
+
 	// Handle slices/arrays
 	if v.Kind() == reflect.Slice || v.Kind() == reflect.Array {
 		if v.Len() == 0 {
@@ -262,7 +262,7 @@ func (f *TableFormatter) FormatGeneric(data interface{}) error {
 
 		// For slice of interface{}, try to determine the type
 		firstElem := v.Index(0).Interface()
-		
+
 		// Handle known types
 		switch firstElem.(type) {
 		case models.Event:
@@ -296,7 +296,7 @@ func (f *TableFormatter) FormatGeneric(data interface{}) error {
 // formatUnknownSlice formats a slice of unknown type
 func (f *TableFormatter) formatUnknownSlice(data interface{}) error {
 	v := reflect.ValueOf(data)
-	
+
 	table := tablewriter.NewWriter(f.writer)
 	table.Header("Index", "Value")
 
@@ -340,7 +340,7 @@ func (f *TableFormatter) formatSingleValue(data interface{}) error {
 		for i := 0; i < v.NumField(); i++ {
 			field := t.Field(i)
 			value := v.Field(i)
-			
+
 			if !value.CanInterface() {
 				continue
 			}
@@ -356,4 +356,3 @@ func (f *TableFormatter) formatSingleValue(data interface{}) error {
 	table.Render()
 	return nil
 }
-

@@ -30,7 +30,7 @@ func (f *TextFormatter) FormatEvent(event *models.Event) error {
 	fmt.Fprintf(f.writer, "Date Created: %s\n", event.DateCreated.Format("2006-01-02 15:04:05"))
 	fmt.Fprintf(f.writer, "Date Received: %s\n", event.DateReceived.Format("2006-01-02 15:04:05"))
 	fmt.Fprintf(f.writer, "Size: %d bytes\n", event.Size)
-	
+
 	if event.GroupID != "" {
 		fmt.Fprintf(f.writer, "Group ID: %s\n", event.GroupID)
 	}
@@ -67,13 +67,13 @@ func (f *TextFormatter) FormatEvents(events []models.Event) error {
 	}
 
 	fmt.Fprintf(f.writer, "Events (%d total):\n\n", len(events))
-	
+
 	for i, event := range events {
 		fmt.Fprintf(f.writer, "%d. Event #%s\n", i+1, event.EventID)
 		fmt.Fprintf(f.writer, "   Title: %s\n", event.Title)
-		fmt.Fprintf(f.writer, "   Type: %s | Platform: %s | Project ID: %s\n", 
+		fmt.Fprintf(f.writer, "   Type: %s | Platform: %s | Project ID: %s\n",
 			event.Type, event.Platform, event.ProjectID)
-		fmt.Fprintf(f.writer, "   Date: %s | Environment: %s\n", 
+		fmt.Fprintf(f.writer, "   Date: %s | Environment: %s\n",
 			event.DateCreated.Format("2006-01-02 15:04"), event.Environment)
 		fmt.Fprintf(f.writer, "\n")
 	}
@@ -87,34 +87,34 @@ func (f *TextFormatter) FormatIssue(issue *models.Issue) error {
 	fmt.Fprintf(f.writer, "Title: %s\n", issue.Title)
 	fmt.Fprintf(f.writer, "Level: %s\n", issue.Level)
 	fmt.Fprintf(f.writer, "Status: %s", issue.Status)
-	
+
 	if issue.Substatus != "" {
 		fmt.Fprintf(f.writer, " (%s)", issue.Substatus)
 	}
 	fmt.Fprintf(f.writer, "\n")
-	
+
 	if issue.Priority != "" {
 		fmt.Fprintf(f.writer, "Priority: %s\n", issue.Priority)
 	}
-	
+
 	fmt.Fprintf(f.writer, "Platform: %s\n", issue.Platform)
 	fmt.Fprintf(f.writer, "Project: %s (%s)\n", issue.Project.Name, issue.Project.Slug)
 	fmt.Fprintf(f.writer, "Count: %s\n", issue.Count)
 	fmt.Fprintf(f.writer, "User Count: %d\n", issue.UserCount)
 	fmt.Fprintf(f.writer, "First Seen: %s\n", issue.FirstSeen.Format("2006-01-02 15:04:05"))
 	fmt.Fprintf(f.writer, "Last Seen: %s\n", issue.LastSeen.Format("2006-01-02 15:04:05"))
-	
+
 	if issue.Culprit != "" {
 		fmt.Fprintf(f.writer, "Culprit: %s\n", issue.Culprit)
 	}
-	
+
 	if issue.Logger != "" {
 		fmt.Fprintf(f.writer, "Logger: %s\n", issue.Logger)
 	}
-	
-	fmt.Fprintf(f.writer, "Public: %v | Bookmarked: %v | Subscribed: %v\n", 
+
+	fmt.Fprintf(f.writer, "Public: %v | Bookmarked: %v | Subscribed: %v\n",
 		issue.IsPublic, issue.IsBookmarked, issue.IsSubscribed)
-	
+
 	if issue.Permalink != "" {
 		fmt.Fprintf(f.writer, "Permalink: %s\n", issue.Permalink)
 	}
@@ -131,15 +131,15 @@ func (f *TextFormatter) FormatIssues(issues []models.Issue) error {
 	}
 
 	fmt.Fprintf(f.writer, "Issues (%d total):\n\n", len(issues))
-	
+
 	for i, issue := range issues {
 		fmt.Fprintf(f.writer, "%d. Issue #%s\n", i+1, issue.ShortID)
 		fmt.Fprintf(f.writer, "   Title: %s\n", issue.Title)
-		fmt.Fprintf(f.writer, "   Level: %s | Status: %s | Count: %s\n", 
+		fmt.Fprintf(f.writer, "   Level: %s | Status: %s | Count: %s\n",
 			issue.Level, issue.Status, issue.Count)
-		fmt.Fprintf(f.writer, "   Project: %s | Users: %d\n", 
+		fmt.Fprintf(f.writer, "   Project: %s | Users: %d\n",
 			issue.Project.Slug, issue.UserCount)
-		fmt.Fprintf(f.writer, "   Last Seen: %s\n", 
+		fmt.Fprintf(f.writer, "   Last Seen: %s\n",
 			issue.LastSeen.Format("2006-01-02 15:04"))
 		fmt.Fprintf(f.writer, "\n")
 	}
@@ -170,12 +170,12 @@ func (f *TextFormatter) FormatProjects(projects []models.Project) error {
 	}
 
 	fmt.Fprintf(f.writer, "Projects (%d total):\n\n", len(projects))
-	
+
 	for i, project := range projects {
 		fmt.Fprintf(f.writer, "%d. %s (%s)\n", i+1, project.Name, project.Slug)
-		fmt.Fprintf(f.writer, "   Platform: %s | Organization: %s\n", 
+		fmt.Fprintf(f.writer, "   Platform: %s | Organization: %s\n",
 			project.Platform, project.Organization.Slug)
-		fmt.Fprintf(f.writer, "   Status: %s | Created: %s\n", 
+		fmt.Fprintf(f.writer, "   Status: %s | Created: %s\n",
 			project.Status, project.DateCreated.Format("2006-01-02"))
 		fmt.Fprintf(f.writer, "\n")
 	}
@@ -187,12 +187,12 @@ func (f *TextFormatter) FormatProjects(projects []models.Project) error {
 func (f *TextFormatter) FormatOrgStats(stats *models.OrganizationStats) error {
 	fmt.Fprintf(f.writer, "Organization Statistics\n")
 	fmt.Fprintf(f.writer, "======================\n\n")
-	
+
 	fmt.Fprintf(f.writer, "Period Start: %s\n", stats.Start.Format("2006-01-02 15:04:05"))
 	fmt.Fprintf(f.writer, "Period End: %s\n", stats.End.Format("2006-01-02 15:04:05"))
 	fmt.Fprintf(f.writer, "Total Sum: %d\n", stats.Totals.Sum)
 	fmt.Fprintf(f.writer, "Times Seen: %d\n", stats.Totals.TimesSeen)
-	
+
 	if len(stats.Projects) > 0 {
 		fmt.Fprintf(f.writer, "\nProjects (%d):\n", len(stats.Projects))
 		for i, project := range stats.Projects {
@@ -211,7 +211,7 @@ func (f *TextFormatter) FormatOrgStats(stats *models.OrganizationStats) error {
 // FormatGeneric formats any data as text
 func (f *TextFormatter) FormatGeneric(data interface{}) error {
 	v := reflect.ValueOf(data)
-	
+
 	// Handle slices/arrays
 	if v.Kind() == reflect.Slice || v.Kind() == reflect.Array {
 		if v.Len() == 0 {
@@ -221,7 +221,7 @@ func (f *TextFormatter) FormatGeneric(data interface{}) error {
 
 		// For slice of interface{}, try to determine the type
 		firstElem := v.Index(0).Interface()
-		
+
 		// Handle known types
 		switch firstElem.(type) {
 		case models.Event:
@@ -255,14 +255,14 @@ func (f *TextFormatter) FormatGeneric(data interface{}) error {
 // formatUnknownSlice formats a slice of unknown type
 func (f *TextFormatter) formatUnknownSlice(data interface{}) error {
 	v := reflect.ValueOf(data)
-	
+
 	fmt.Fprintf(f.writer, "Data (%d items):\n\n", v.Len())
-	
+
 	for i := 0; i < v.Len(); i++ {
 		elem := v.Index(i)
 		fmt.Fprintf(f.writer, "%d. %v\n", i+1, elem.Interface())
 	}
-	
+
 	fmt.Fprintf(f.writer, "\n")
 	return nil
 }
@@ -290,11 +290,11 @@ func (f *TextFormatter) formatSingleValue(data interface{}) error {
 		}
 		fmt.Fprintf(f.writer, "%s:\n", typeName)
 		fmt.Fprintf(f.writer, "%s\n", strings.Repeat("=", len(typeName)+1))
-		
+
 		for i := 0; i < v.NumField(); i++ {
 			field := t.Field(i)
 			value := v.Field(i)
-			
+
 			if !value.CanInterface() {
 				continue
 			}
