@@ -25,12 +25,12 @@ func GetFullVersionInfo() string {
 Build time: %s
 Git commit: %s
 Go version: %s
-OS/Arch: %s/%s`, 
-		Version, 
-		BuildTime, 
-		GitCommit, 
-		runtime.Version(), 
-		runtime.GOOS, 
+OS/Arch: %s/%s`,
+		Version,
+		BuildTime,
+		GitCommit,
+		runtime.Version(),
+		runtime.GOOS,
 		runtime.GOARCH,
 	)
 }
