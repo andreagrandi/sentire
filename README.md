@@ -49,11 +49,32 @@ go build -o sentire ./cmd/sentire
 
 ## Configuration
 
-Before using sentire, you must set your Sentry API token as an environment variable:
+Sentire supports two methods for providing your Sentry API token: environment variables and configuration files.
+
+### Environment Variable (Recommended)
+
+Set your Sentry API token as an environment variable:
 
 ```bash
 export SENTRY_API_TOKEN=your_sentry_api_token_here
 ```
+
+### Configuration File
+
+Alternatively, you can create a configuration file at `~/.config/sentire/config.json`:
+
+```json
+{
+  "sentry_api_token": "your_sentry_api_token_here"
+}
+```
+
+### Configuration Precedence
+
+If both are provided, the environment variable takes precedence over the configuration file. This allows you to:
+
+- Use a config file for your default token
+- Override it temporarily with an environment variable when needed
 
 You can obtain an API token from your Sentry organization settings under "Auth Tokens".
 
@@ -317,6 +338,6 @@ Licensed under the MIT License. See [LICENSE](LICENSE) for details.
 Future enhancements may include:
 
 - ✅ **Multiple output formats** (JSON, table, text, markdown) - **COMPLETED**
-- Configuration file support
+- ✅ **Configuration file support** - **COMPLETED**
 - Additional Sentry API endpoints
 - Export functionality (CSV, JSON files)
