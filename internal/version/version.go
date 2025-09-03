@@ -6,7 +6,7 @@ import (
 )
 
 // Version is the current version of sentire
-const Version = "0.1.0"
+const Version = "0.2.0"
 
 // These variables will be set at build time via ldflags
 var (
