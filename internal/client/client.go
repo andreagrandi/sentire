@@ -6,16 +6,15 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
+	"sentire/internal/config"
 	"strconv"
 	"strings"
 	"time"
 )
 
 const (
-	BaseURL     = "https://sentry.io/api/0"
-	UserAgent   = "sentire/1.0.0"
-	TokenEnvVar = "SENTRY_API_TOKEN"
+	BaseURL   = "https://sentry.io/api/0"
+	UserAgent = "sentire/1.0.0"
 )
 
 // Client represents the Sentry API client
@@ -51,9 +50,9 @@ type Response struct {
 
 // NewClient creates a new Sentry API client
 func NewClient() (*Client, error) {
-	token := os.Getenv(TokenEnvVar)
-	if token == "" {
-		return nil, fmt.Errorf("environment variable %s is required", TokenEnvVar)
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		return nil, err
 	}
 
 	return &Client{
@@ -61,7 +60,7 @@ func NewClient() (*Client, error) {
 		HTTPClient: &http.Client{
 			Timeout: 30 * time.Second,
 		},
-		Token:     token,
+		Token:     cfg.SentryAPIToken,
 		RateLimit: &RateLimiter{},
 	}, nil
 }
