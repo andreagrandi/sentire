@@ -1,6 +1,6 @@
 module sentire
 
-go 1.25
+go 1.26.1
 
 require (
 	github.com/fatih/color v1.15.0 // indirect
