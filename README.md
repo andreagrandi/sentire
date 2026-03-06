@@ -39,7 +39,7 @@ Download the latest release for your platform from the [releases page](https://g
 
 ### Building from source
 
-Prerequisites: Go 1.25 or later
+Prerequisites: Go 1.26.1 or later
 
 ```bash
 git clone <repository-url>
