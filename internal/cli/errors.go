@@ -101,7 +101,7 @@ func wrapError(err error) error {
 // writeErrorOutput writes the error to stderr in the appropriate format
 func writeErrorOutput(w io.Writer, err error, format string) {
 	wrapped := wrapError(err)
-	if cliErr, ok := wrapped.(*CLIError); ok && format == "json" {
+	if cliErr, ok := wrapped.(*CLIError); ok && (format == "json" || format == "ndjson") {
 		json.NewEncoder(w).Encode(cliErr)
 	} else {
 		fmt.Fprintf(w, "Error: %v\n", err)

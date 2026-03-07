@@ -50,6 +50,8 @@ func NewFormatter(cmd *cobra.Command, writer io.Writer) (Formatter, error) {
 	switch format {
 	case "json":
 		return NewJSONFormatter(writer, fields), nil
+	case "ndjson":
+		return NewNDJSONFormatter(writer, fields), nil
 	case "table":
 		return NewTableFormatter(writer), nil
 	case "text":
