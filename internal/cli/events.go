@@ -108,6 +108,13 @@ func init() {
 func runListProjectEvents(cmd *cobra.Command, args []string) error {
 	orgSlug, projectSlug := args[0], args[1]
 
+	if err := validateOrgSlug(orgSlug); err != nil {
+		return err
+	}
+	if err := validateProjectSlug(projectSlug); err != nil {
+		return err
+	}
+
 	c, err := client.NewClient()
 	if err != nil {
 		return err
@@ -162,6 +169,13 @@ func runListProjectEvents(cmd *cobra.Command, args []string) error {
 
 func runListIssueEvents(cmd *cobra.Command, args []string) error {
 	orgSlug, issueID := args[0], args[1]
+
+	if err := validateOrgSlug(orgSlug); err != nil {
+		return err
+	}
+	if err := validateIssueID(issueID); err != nil {
+		return err
+	}
 
 	c, err := client.NewClient()
 	if err != nil {
@@ -223,6 +237,10 @@ func runListIssueEvents(cmd *cobra.Command, args []string) error {
 
 func runListIssues(cmd *cobra.Command, args []string) error {
 	orgSlug := args[0]
+
+	if err := validateOrgSlug(orgSlug); err != nil {
+		return err
+	}
 
 	c, err := client.NewClient()
 	if err != nil {
@@ -288,6 +306,16 @@ func runListIssues(cmd *cobra.Command, args []string) error {
 func runGetEvent(cmd *cobra.Command, args []string) error {
 	orgSlug, projectSlug, eventID := args[0], args[1], args[2]
 
+	if err := validateOrgSlug(orgSlug); err != nil {
+		return err
+	}
+	if err := validateProjectSlug(projectSlug); err != nil {
+		return err
+	}
+	if err := validateEventID(eventID); err != nil {
+		return err
+	}
+
 	c, err := client.NewClient()
 	if err != nil {
 		return err
@@ -305,6 +333,13 @@ func runGetEvent(cmd *cobra.Command, args []string) error {
 func runGetIssue(cmd *cobra.Command, args []string) error {
 	orgSlug, issueID := args[0], args[1]
 
+	if err := validateOrgSlug(orgSlug); err != nil {
+		return err
+	}
+	if err := validateIssueID(issueID); err != nil {
+		return err
+	}
+
 	c, err := client.NewClient()
 	if err != nil {
 		return err
@@ -321,6 +356,16 @@ func runGetIssue(cmd *cobra.Command, args []string) error {
 
 func runGetIssueEvent(cmd *cobra.Command, args []string) error {
 	orgSlug, issueID, eventID := args[0], args[1], args[2]
+
+	if err := validateOrgSlug(orgSlug); err != nil {
+		return err
+	}
+	if err := validateIssueID(issueID); err != nil {
+		return err
+	}
+	if err := validateEventID(eventID); err != nil {
+		return err
+	}
 
 	c, err := client.NewClient()
 	if err != nil {

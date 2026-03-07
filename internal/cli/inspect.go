@@ -66,6 +66,10 @@ func parseSentryURL(rawURL string) (*SentryURLParts, error) {
 func runInspect(cmd *cobra.Command, args []string) error {
 	sentryURL := args[0]
 
+	if err := validateInspectURL(sentryURL); err != nil {
+		return err
+	}
+
 	// Parse the URL to extract organization and issue ID
 	parts, err := parseSentryURL(sentryURL)
 	if err != nil {

@@ -55,6 +55,10 @@ func init() {
 func runListOrgProjects(cmd *cobra.Command, args []string) error {
 	orgSlug := args[0]
 
+	if err := validateOrgSlug(orgSlug); err != nil {
+		return err
+	}
+
 	c, err := client.NewClient()
 	if err != nil {
 		return err
@@ -93,6 +97,10 @@ func runListOrgProjects(cmd *cobra.Command, args []string) error {
 
 func runGetOrgStats(cmd *cobra.Command, args []string) error {
 	orgSlug := args[0]
+
+	if err := validateOrgSlug(orgSlug); err != nil {
+		return err
+	}
 
 	c, err := client.NewClient()
 	if err != nil {

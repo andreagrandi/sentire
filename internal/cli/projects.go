@@ -80,6 +80,13 @@ func runListProjects(cmd *cobra.Command, args []string) error {
 func runGetProject(cmd *cobra.Command, args []string) error {
 	orgSlug, projectSlug := args[0], args[1]
 
+	if err := validateOrgSlug(orgSlug); err != nil {
+		return err
+	}
+	if err := validateProjectSlug(projectSlug); err != nil {
+		return err
+	}
+
 	c, err := client.NewClient()
 	if err != nil {
 		return err
