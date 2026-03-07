@@ -2,6 +2,23 @@
 
 All notable changes to Sentire will be documented in this file.
 
+## [0.3.0] - 2026-03-07
+
+### Added
+- `context` command and CONTEXT.md agent skill file
+- `describe` command for schema introspection
+- `--format ndjson` for newline-delimited JSON output
+- `--fields` flag for JSON output filtering
+- Input validation for slugs, IDs, and URLs
+- Structured errors with typed codes and distinct exit codes
+
+### Fixed
+- TestNewClient failing when config file exists
+
+### Technical
+- Bump Go from 1.25 to 1.26.1
+- Bump GitHub Actions dependencies (actions/cache, actions/checkout, actions/setup-go)
+
 ## [0.2.0] - 2025-01-03
 
 ### Added
