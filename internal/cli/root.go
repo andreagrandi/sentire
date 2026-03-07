@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -17,14 +16,16 @@ It allows you to query events, issues, projects, and organizations directly from
 
 Before using sentire, make sure to set your Sentry API token:
   export SENTRY_API_TOKEN=your_token_here`,
-	SilenceUsage: true,
+	SilenceUsage:  true,
+	SilenceErrors: true,
 }
 
 // Execute runs the root command
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
+		format, _ := rootCmd.PersistentFlags().GetString("format")
+		writeErrorOutput(os.Stderr, err, format)
+		os.Exit(exitCodeFromError(err))
 	}
 }
 

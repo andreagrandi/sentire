@@ -7,6 +7,15 @@ import (
 	"path/filepath"
 )
 
+// AuthError represents an authentication configuration error
+type AuthError struct {
+	Message string
+}
+
+func (e *AuthError) Error() string {
+	return e.Message
+}
+
 // Config holds the application configuration
 type Config struct {
 	SentryAPIToken string `json:"sentry_api_token"`
@@ -31,12 +40,12 @@ func LoadConfig() (*Config, error) {
 
 	if err := loadFromFile(configPath, config); err != nil {
 		// If config file doesn't exist or has issues, return error about missing token
-		return nil, fmt.Errorf("SENTRY_API_TOKEN environment variable is required (or configure ~/.config/sentire/config.json)")
+		return nil, &AuthError{Message: "SENTRY_API_TOKEN environment variable is required (or configure ~/.config/sentire/config.json)"}
 	}
 
 	// Validate that we have a token
 	if config.SentryAPIToken == "" {
-		return nil, fmt.Errorf("SENTRY_API_TOKEN is required in config file")
+		return nil, &AuthError{Message: "SENTRY_API_TOKEN is required in config file"}
 	}
 
 	return config, nil

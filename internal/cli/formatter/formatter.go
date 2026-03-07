@@ -1,13 +1,21 @@
 package formatter
 
 import (
-	"fmt"
 	"io"
 	"os"
 	"sentire/pkg/models"
 
 	"github.com/spf13/cobra"
 )
+
+// FormatError represents an unsupported format error
+type FormatError struct {
+	Message string
+}
+
+func (e *FormatError) Error() string {
+	return e.Message
+}
 
 // Formatter defines the interface for different output formats
 type Formatter interface {
@@ -38,7 +46,7 @@ func NewFormatter(cmd *cobra.Command, writer io.Writer) (Formatter, error) {
 	case "markdown":
 		return NewMarkdownFormatter(writer), nil
 	default:
-		return nil, fmt.Errorf("unsupported format: %s", format)
+		return nil, &FormatError{Message: "unsupported format: " + format}
 	}
 }
 
