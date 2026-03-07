@@ -12,9 +12,12 @@ import (
 )
 
 func TestNewClient(t *testing.T) {
-	// Test with missing token
+	// Test with missing token (also override HOME to avoid loading config file)
 	os.Unsetenv("SENTRY_API_TOKEN")
+	originalHome := os.Getenv("HOME")
+	os.Setenv("HOME", t.TempDir())
 	_, err := client.NewClient()
+	os.Setenv("HOME", originalHome)
 	if err == nil {
 		t.Error("Expected error when SENTRY_API_TOKEN is not set")
 	}

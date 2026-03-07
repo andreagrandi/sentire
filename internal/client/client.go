@@ -48,6 +48,16 @@ type Response struct {
 	Pagination *PaginationInfo
 }
 
+// APIError represents an error returned by the Sentry API
+type APIError struct {
+	Message    string
+	StatusCode int
+}
+
+func (e *APIError) Error() string {
+	return e.Message
+}
+
 // NewClient creates a new Sentry API client
 func NewClient() (*Client, error) {
 	cfg, err := config.LoadConfig()
@@ -92,7 +102,10 @@ func (c *Client) Do(req *http.Request) (*Response, error) {
 	if resp.StatusCode >= 400 {
 		defer resp.Body.Close()
 		body, _ := io.ReadAll(resp.Body)
-		return response, fmt.Errorf("API request failed with status %d: %s", resp.StatusCode, string(body))
+		return response, &APIError{
+			Message:    fmt.Sprintf("API request failed with status %d: %s", resp.StatusCode, string(body)),
+			StatusCode: resp.StatusCode,
+		}
 	}
 
 	return response, nil

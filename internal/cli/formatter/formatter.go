@@ -1,13 +1,22 @@
 package formatter
 
 import (
-	"fmt"
 	"io"
 	"os"
 	"sentire/pkg/models"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
+
+// FormatError represents an unsupported format error
+type FormatError struct {
+	Message string
+}
+
+func (e *FormatError) Error() string {
+	return e.Message
+}
 
 // Formatter defines the interface for different output formats
 type Formatter interface {
@@ -28,9 +37,21 @@ func NewFormatter(cmd *cobra.Command, writer io.Writer) (Formatter, error) {
 		writer = os.Stdout
 	}
 
+	var fields []string
+	if fieldsStr, _ := cmd.Flags().GetString("fields"); fieldsStr != "" {
+		for _, f := range strings.Split(fieldsStr, ",") {
+			f = strings.TrimSpace(f)
+			if f != "" {
+				fields = append(fields, f)
+			}
+		}
+	}
+
 	switch format {
 	case "json":
-		return NewJSONFormatter(writer), nil
+		return NewJSONFormatter(writer, fields), nil
+	case "ndjson":
+		return NewNDJSONFormatter(writer, fields), nil
 	case "table":
 		return NewTableFormatter(writer), nil
 	case "text":
@@ -38,7 +59,7 @@ func NewFormatter(cmd *cobra.Command, writer io.Writer) (Formatter, error) {
 	case "markdown":
 		return NewMarkdownFormatter(writer), nil
 	default:
-		return nil, fmt.Errorf("unsupported format: %s", format)
+		return nil, &FormatError{Message: "unsupported format: " + format}
 	}
 }
 

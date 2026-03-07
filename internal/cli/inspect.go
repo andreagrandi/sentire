@@ -66,10 +66,14 @@ func parseSentryURL(rawURL string) (*SentryURLParts, error) {
 func runInspect(cmd *cobra.Command, args []string) error {
 	sentryURL := args[0]
 
+	if err := validateInspectURL(sentryURL); err != nil {
+		return err
+	}
+
 	// Parse the URL to extract organization and issue ID
 	parts, err := parseSentryURL(sentryURL)
 	if err != nil {
-		return fmt.Errorf("failed to parse Sentry URL: %w", err)
+		return NewInvalidInputError(fmt.Sprintf("failed to parse Sentry URL: %v", err))
 	}
 
 	// Create API client
