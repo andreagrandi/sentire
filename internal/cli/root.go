@@ -33,4 +33,5 @@ func init() {
 	// Global flags
 	rootCmd.PersistentFlags().StringP("format", "f", "json", "Output format: json, table, text, markdown")
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "Verbose output")
+	rootCmd.PersistentFlags().String("fields", "", "Comma-separated list of fields to include in JSON output")
 }

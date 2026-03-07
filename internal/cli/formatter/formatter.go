@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 	"sentire/pkg/models"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -36,9 +37,19 @@ func NewFormatter(cmd *cobra.Command, writer io.Writer) (Formatter, error) {
 		writer = os.Stdout
 	}
 
+	var fields []string
+	if fieldsStr, _ := cmd.Flags().GetString("fields"); fieldsStr != "" {
+		for _, f := range strings.Split(fieldsStr, ",") {
+			f = strings.TrimSpace(f)
+			if f != "" {
+				fields = append(fields, f)
+			}
+		}
+	}
+
 	switch format {
 	case "json":
-		return NewJSONFormatter(writer), nil
+		return NewJSONFormatter(writer, fields), nil
 	case "table":
 		return NewTableFormatter(writer), nil
 	case "text":

@@ -9,11 +9,12 @@ import (
 // JSONFormatter outputs data in JSON format (default behavior)
 type JSONFormatter struct {
 	writer io.Writer
+	fields []string
 }
 
 // NewJSONFormatter creates a new JSON formatter
-func NewJSONFormatter(writer io.Writer) *JSONFormatter {
-	return &JSONFormatter{writer: writer}
+func NewJSONFormatter(writer io.Writer, fields []string) *JSONFormatter {
+	return &JSONFormatter{writer: writer, fields: fields}
 }
 
 // FormatEvent formats a single event as JSON
@@ -53,6 +54,7 @@ func (f *JSONFormatter) FormatOrgStats(stats *models.OrganizationStats) error {
 
 // FormatGeneric formats any data as JSON
 func (f *JSONFormatter) FormatGeneric(data interface{}) error {
+	data = filterFields(data, f.fields)
 	encoder := json.NewEncoder(f.writer)
 	encoder.SetIndent("", "  ")
 	return encoder.Encode(data)
