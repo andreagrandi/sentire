@@ -2,6 +2,17 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Session Start Workflow
+
+Before making code or documentation changes in this repo:
+
+1. Switch back to `master`.
+2. Pull the latest changes with `git pull --ff-only`.
+3. Create a new branch with a short, descriptive name related to the feature being added or the bug being fixed.
+4. Make the requested changes on that branch.
+
+Do not start work from an old feature branch unless the user explicitly asks to continue that branch.
+
 ## Project Overview
 
 Sentire is a CLI tool for the Sentry API written in Go, providing comprehensive access to Sentry's debugging data including complete stack traces, contexts, and event details. The tool features both 1:1 API mapping commands and user-friendly custom commands like `inspect` for parsing Sentry URLs.
