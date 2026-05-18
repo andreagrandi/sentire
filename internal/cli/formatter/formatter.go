@@ -1,9 +1,9 @@
 package formatter
 
 import (
+	"github.com/andreagrandi/sentire/pkg/models"
 	"io"
 	"os"
-	"github.com/andreagrandi/sentire/pkg/models"
 	"strings"
 
 	"github.com/spf13/cobra"

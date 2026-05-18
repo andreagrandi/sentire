@@ -3,10 +3,10 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/andreagrandi/sentire/internal/config"
 	"io"
 	"net/http"
 	"net/url"
-	"github.com/andreagrandi/sentire/internal/config"
 	"strconv"
 	"strings"
 	"time"

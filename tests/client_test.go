@@ -1,11 +1,11 @@
 package tests
 
 import (
+	"github.com/andreagrandi/sentire/internal/client"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"os"
-	"github.com/andreagrandi/sentire/internal/client"
 	"strings"
 	"testing"
 	"time"

@@ -2,9 +2,9 @@ package api
 
 import (
 	"fmt"
-	"net/url"
 	"github.com/andreagrandi/sentire/internal/client"
 	"github.com/andreagrandi/sentire/pkg/models"
+	"net/url"
 )
 
 // EventsAPI provides methods for interacting with Sentry Events API

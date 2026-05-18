@@ -3,11 +3,11 @@ package tests
 import (
 	"bytes"
 	"encoding/json"
-	"os"
-	"os/exec"
 	"github.com/andreagrandi/sentire/internal/cli/formatter"
 	"github.com/andreagrandi/sentire/internal/client"
 	"github.com/andreagrandi/sentire/internal/config"
+	"os"
+	"os/exec"
 	"strings"
 	"testing"
 )

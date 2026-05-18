@@ -2,11 +2,11 @@ package cli
 
 import (
 	"fmt"
-	"net/url"
-	"regexp"
 	"github.com/andreagrandi/sentire/internal/api"
 	"github.com/andreagrandi/sentire/internal/cli/formatter"
 	"github.com/andreagrandi/sentire/internal/client"
+	"net/url"
+	"regexp"
 
 	"github.com/spf13/cobra"
 )

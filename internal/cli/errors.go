@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"github.com/andreagrandi/sentire/internal/cli/formatter"
 	"github.com/andreagrandi/sentire/internal/client"
 	"github.com/andreagrandi/sentire/internal/config"
+	"io"
 )
 
 // Exit codes for different error categories

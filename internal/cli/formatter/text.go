@@ -2,9 +2,9 @@ package formatter
 
 import (
 	"fmt"
+	"github.com/andreagrandi/sentire/pkg/models"
 	"io"
 	"reflect"
-	"github.com/andreagrandi/sentire/pkg/models"
 	"strings"
 )
 
