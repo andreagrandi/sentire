@@ -59,6 +59,10 @@ Set your Sentry API token as an environment variable:
 export SENTRY_API_TOKEN=your_sentry_api_token_here
 ```
 
+To avoid recording the token in your shell history, prefix the command with a
+space (when `HISTCONTROL` includes `ignorespace`) or load it from a credential
+manager.
+
 ### Configuration File
 
 Alternatively, you can create a configuration file at `~/.config/sentire/config.json`:
@@ -69,6 +73,12 @@ Alternatively, you can create a configuration file at `~/.config/sentire/config.
 }
 ```
 
+Restrict access to that file so other users on the system cannot read it:
+
+```bash
+chmod 600 ~/.config/sentire/config.json
+```
+
 ### Configuration Precedence
 
 If both are provided, the environment variable takes precedence over the configuration file. This allows you to:
@@ -77,6 +87,15 @@ If both are provided, the environment variable takes precedence over the configu
 - Override it temporarily with an environment variable when needed
 
 You can obtain an API token from your Sentry organization settings under "Auth Tokens".
+
+### Token Safety in Output
+
+Sentire never prints the configured token in standard, verbose, or error
+output: the API response body included in error messages and the final CLI
+error writer both run through a redaction helper that replaces the token with
+`[REDACTED]`. Do not share raw command output that contains your token (for
+example, if you pasted it directly into the URL or another argument), since
+only the configured token can be redacted automatically.
 
 ## Usage
 

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/andreagrandi/sentire/internal/config"
+	"github.com/andreagrandi/sentire/internal/redact"
 	"io"
 	"net/http"
 	"net/url"
@@ -84,7 +85,9 @@ func (c *Client) Do(req *http.Request) (*Response, error) {
 
 	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("http request failed: %w", err)
+		// Transport errors come from net/http and may include the request URL;
+		// strip the token defensively in case it ever surfaces in a wrapped error.
+		return nil, fmt.Errorf("http request failed: %s", redact.Secret(err.Error(), c.Token))
 	}
 
 	// Parse rate limit headers
@@ -103,7 +106,7 @@ func (c *Client) Do(req *http.Request) (*Response, error) {
 		defer resp.Body.Close()
 		body, _ := io.ReadAll(resp.Body)
 		return response, &APIError{
-			Message:    fmt.Sprintf("API request failed with status %d: %s", resp.StatusCode, string(body)),
+			Message:    fmt.Sprintf("API request failed with status %d: %s", resp.StatusCode, redact.Secret(string(body), c.Token)),
 			StatusCode: resp.StatusCode,
 		}
 	}
