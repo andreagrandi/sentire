@@ -7,7 +7,9 @@ import (
 	"github.com/andreagrandi/sentire/internal/cli/formatter"
 	"github.com/andreagrandi/sentire/internal/client"
 	"github.com/andreagrandi/sentire/internal/config"
+	"github.com/andreagrandi/sentire/internal/redact"
 	"io"
+	"os"
 )
 
 // Exit codes for different error categories
@@ -98,14 +100,33 @@ func wrapError(err error) error {
 	return err
 }
 
-// writeErrorOutput writes the error to stderr in the appropriate format
+// writeErrorOutput writes the error to stderr in the appropriate format.
+// All output is run through token redaction as a defense-in-depth measure so
+// that even an error message constructed outside the client never leaks the
+// Sentry API token.
 func writeErrorOutput(w io.Writer, err error, format string) {
 	wrapped := wrapError(err)
+	secret := loadSecretForRedaction()
 	if cliErr, ok := wrapped.(*CLIError); ok && (format == "json" || format == "ndjson") {
+		cliErr.Message = redact.Secret(cliErr.Message, secret)
 		json.NewEncoder(w).Encode(cliErr)
 	} else {
-		fmt.Fprintf(w, "Error: %v\n", err)
+		fmt.Fprintf(w, "Error: %s\n", redact.Secret(err.Error(), secret))
 	}
+}
+
+// loadSecretForRedaction returns the configured Sentry API token, falling back
+// to the config file when the env var is unset. Returns "" if neither is set,
+// in which case redaction is a no-op.
+func loadSecretForRedaction() string {
+	if t := os.Getenv("SENTRY_API_TOKEN"); t != "" {
+		return t
+	}
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		return ""
+	}
+	return cfg.SentryAPIToken
 }
 
 // exitCodeFromError returns the appropriate exit code for an error
