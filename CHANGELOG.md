@@ -2,6 +2,21 @@
 
 All notable changes to Sentire will be documented in this file.
 
+## [Unreleased]
+
+### Added
+- Agent workflow recipes in `context` output and `CONTEXT.md` (triage, URL inspection, release reporting)
+- README section pointing agents at `sentire context` and `sentire describe`
+- Test coverage locking the `describe` output schema and the agent context guide
+
+### Fixed
+- Redact `SENTRY_API_TOKEN` from error and verbose output
+
+### Technical
+- Use full GitHub module path (`github.com/andreagrandi/sentire`) for public `go install`
+- Bump `github.com/spf13/cobra` from 1.8.1 to 1.10.2
+- Lower `go.mod` minimum to Go 1.24 and add Go 1.24/1.25 to the CI build matrix
+
 ## [0.3.0] - 2026-03-07
 
 ### Added
