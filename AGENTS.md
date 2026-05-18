@@ -92,6 +92,42 @@ All commands output JSON by default with proper indentation. The `inspect` comma
 
 Commands follow the pattern: `./sentire <resource> <action> [args] [flags]` with the exception of the custom `inspect` command which prioritizes ease of use over API consistency.
 
+## Changelog
+
+`CHANGELOG.md` is the canonical record of user-visible changes. Update it in
+the same change that introduces the behaviour — not as a follow-up.
+
+### When to add an entry
+
+Add an entry when a change affects any of:
+
+- CLI surface (new/renamed/removed commands, flags, arguments, defaults)
+- Observable behaviour (output shape, exit codes, error messages, env vars)
+- Packaging or installation (release artifacts, Homebrew tap, `go install` path)
+- Configuration file format or supported locations
+- Dependency bumps that ship in the binary or change the minimum Go version
+- Agent-facing contracts: `describe` schema, `context` output, CONTEXT.md guidance
+
+Skip the changelog only for changes with no user-visible effect: internal
+refactors, test-only changes, CI tweaks that do not ship, formatting, or
+edits to private agent instructions (AGENTS.md / .opencode/).
+
+### How to add an entry
+
+- Add the entry under `## [Unreleased]` at the top of `CHANGELOG.md`. Do not
+  invent a new version heading — the release workflow promotes `[Unreleased]`
+  when the version is bumped.
+- Use the existing subsections: `Added`, `Changed`, `Fixed`, `Technical`.
+  Create a subsection only if it is missing and your change needs it.
+- Keep entries to a single line each. Lead with the user-facing effect, not
+  the implementation detail. Reference the command or flag explicitly when
+  relevant (e.g. ``Add `--all` flag to `events list-issues```).
+- Group related changes into one entry rather than splitting per-commit.
+
+Before opening a PR, check that `CHANGELOG.md` has an `[Unreleased]` entry
+covering your change, or be ready to explain in the PR why no entry is
+needed.
+
 ## New release
 
 When asked to create a new release please refer to @.opencode/agent/new-release.md

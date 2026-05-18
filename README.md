@@ -356,6 +356,18 @@ To bypass the hook temporarily (not recommended):
 git commit --no-verify
 ```
 
+## Changelog
+
+User-visible changes are tracked in [`CHANGELOG.md`](CHANGELOG.md). When you
+open a PR, add an entry under `## [Unreleased]` for any change that affects
+commands, flags, output, packaging, configuration, dependencies that ship in
+the binary, or the agent-facing `describe` / `context` contracts. Pure
+internal refactors, tests, and CI tweaks do not need an entry.
+
+Use the existing `Added` / `Changed` / `Fixed` / `Technical` subsections and
+keep each entry to a single line that leads with the user-facing effect. See
+`AGENTS.md` for the full workflow.
+
 ## Testing
 
 Run the test suite:

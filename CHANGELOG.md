@@ -8,6 +8,7 @@ All notable changes to Sentire will be documented in this file.
 - Agent workflow recipes in `context` output and `CONTEXT.md` (triage, URL inspection, release reporting)
 - README section pointing agents at `sentire context` and `sentire describe`
 - Test coverage locking the `describe` output schema and the agent context guide
+- Contributor and agent guidance for keeping `CHANGELOG.md` updated, plus a PR template prompting for an `[Unreleased]` entry
 
 ### Fixed
 - Redact `SENTRY_API_TOKEN` from error and verbose output
