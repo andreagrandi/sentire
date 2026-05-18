@@ -98,6 +98,55 @@ func TestDescribeSpecificCommand(t *testing.T) {
 	}
 }
 
+func TestDescribeSchemaIsStable(t *testing.T) {
+	binary := buildSentire(t)
+	stdout, _, exitCode := runSentire(t, binary, "describe")
+
+	if exitCode != 0 {
+		t.Fatalf("Expected exit code 0, got %d", exitCode)
+	}
+
+	var top map[string]json.RawMessage
+	if err := json.Unmarshal([]byte(stdout), &top); err != nil {
+		t.Fatalf("Invalid JSON output: %v", err)
+	}
+	if _, ok := top["commands"]; !ok {
+		t.Fatal("Expected top-level 'commands' key")
+	}
+
+	var entries []map[string]json.RawMessage
+	if err := json.Unmarshal(top["commands"], &entries); err != nil {
+		t.Fatalf("Invalid commands array: %v", err)
+	}
+	if len(entries) == 0 {
+		t.Fatal("Expected at least one command entry")
+	}
+
+	requiredKeys := []string{"name", "description"}
+	for _, entry := range entries {
+		for _, key := range requiredKeys {
+			if _, ok := entry[key]; !ok {
+				t.Errorf("Command entry missing %q: %v", key, entry)
+			}
+		}
+	}
+
+	stdout, _, exitCode = runSentire(t, binary, "describe", "events", "list-issues")
+	if exitCode != 0 {
+		t.Fatalf("Expected exit code 0 for specific command, got %d", exitCode)
+	}
+
+	var specific map[string]json.RawMessage
+	if err := json.Unmarshal([]byte(stdout), &specific); err != nil {
+		t.Fatalf("Invalid JSON output for specific command: %v", err)
+	}
+	for _, key := range []string{"name", "description", "args", "flags", "output_fields"} {
+		if _, ok := specific[key]; !ok {
+			t.Errorf("Specific describe output missing %q", key)
+		}
+	}
+}
+
 func TestDescribeUnknownCommand(t *testing.T) {
 	binary := buildSentire(t)
 

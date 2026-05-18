@@ -140,6 +140,27 @@ sentire events get-issue <organization> <issue-id>
 sentire events get-issue-event <organization> <issue-id> latest
 ```
 
+### Agent Workflows
+
+Sentire is designed to be driven by both humans and AI agents. The `context`
+command prints an agent-oriented guide (also embedded as
+[`CONTEXT.md`](CONTEXT.md)) covering authentication, output control, query
+syntax, and end-to-end workflows for issue triage, URL inspection, and
+release reporting:
+
+```bash
+# Print the agent guide
+sentire context
+
+# Discover commands and their JSON output schema
+sentire describe
+sentire describe events list-issues
+```
+
+For machine consumption, prefer `--format json` (default) or `--format ndjson`
+together with `--fields` to keep payloads small. The `table`, `text`, and
+`markdown` formats are intended for humans and are not stable for parsing.
+
 ### URL Inspection
 
 Sentire includes a special `inspect` command that can parse Sentry URLs directly:
