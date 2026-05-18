@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
-	"sentire/pkg/models"
+	"github.com/andreagrandi/sentire/pkg/models"
 	"strings"
 
 	"github.com/spf13/cobra"

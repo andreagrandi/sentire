@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"sentire/internal/config"
+	"github.com/andreagrandi/sentire/internal/config"
 	"strconv"
 	"strings"
 	"time"

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 	"reflect"
-	"sentire/pkg/models"
+	"github.com/andreagrandi/sentire/pkg/models"
 	"strconv"
 
 	"github.com/olekukonko/tablewriter"

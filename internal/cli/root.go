@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"sentire/internal/version"
+	"github.com/andreagrandi/sentire/internal/version"
 )
 
 var rootCmd = &cobra.Command{

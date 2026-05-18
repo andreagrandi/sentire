@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"reflect"
-	"sentire/pkg/models"
+	"github.com/andreagrandi/sentire/pkg/models"
 )
 
 // NDJSONFormatter outputs data as newline-delimited JSON (one object per line)

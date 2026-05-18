@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"os"
-	"sentire/internal/client"
+	"github.com/andreagrandi/sentire/internal/client"
 	"strings"
 	"testing"
 	"time"

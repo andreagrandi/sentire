@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"sentire/internal/config"
+	"github.com/andreagrandi/sentire/internal/config"
 	"testing"
 )
 

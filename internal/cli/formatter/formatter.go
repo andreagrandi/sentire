@@ -3,7 +3,7 @@ package formatter
 import (
 	"io"
 	"os"
-	"sentire/pkg/models"
+	"github.com/andreagrandi/sentire/pkg/models"
 	"strings"
 
 	"github.com/spf13/cobra"

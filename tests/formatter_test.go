@@ -2,8 +2,8 @@ package tests
 
 import (
 	"bytes"
-	"sentire/internal/cli/formatter"
-	"sentire/pkg/models"
+	"github.com/andreagrandi/sentire/internal/cli/formatter"
+	"github.com/andreagrandi/sentire/pkg/models"
 	"strings"
 	"testing"
 	"time"

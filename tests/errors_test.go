@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"os"
 	"os/exec"
-	"sentire/internal/cli/formatter"
-	"sentire/internal/client"
-	"sentire/internal/config"
+	"github.com/andreagrandi/sentire/internal/cli/formatter"
+	"github.com/andreagrandi/sentire/internal/client"
+	"github.com/andreagrandi/sentire/internal/config"
 	"strings"
 	"testing"
 )
