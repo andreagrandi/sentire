@@ -2,12 +2,12 @@ package tests
 
 import (
 	"encoding/json"
+	"github.com/andreagrandi/sentire/internal/api"
+	"github.com/andreagrandi/sentire/internal/client"
+	"github.com/andreagrandi/sentire/pkg/models"
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"sentire/internal/api"
-	"sentire/internal/client"
-	"sentire/pkg/models"
 	"strings"
 	"testing"
 	"time"

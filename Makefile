@@ -6,7 +6,7 @@ all: build
 # Variables for version injection
 BUILD_TIME := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 GIT_COMMIT := $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-LDFLAGS := -X sentire/internal/version.BuildTime=$(BUILD_TIME) -X sentire/internal/version.GitCommit=$(GIT_COMMIT)
+LDFLAGS := -X github.com/andreagrandi/sentire/internal/version.BuildTime=$(BUILD_TIME) -X github.com/andreagrandi/sentire/internal/version.GitCommit=$(GIT_COMMIT)
 
 # Build the application
 build:

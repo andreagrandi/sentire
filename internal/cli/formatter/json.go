@@ -2,8 +2,8 @@ package formatter
 
 import (
 	"encoding/json"
+	"github.com/andreagrandi/sentire/pkg/models"
 	"io"
-	"sentire/pkg/models"
 )
 
 // JSONFormatter outputs data in JSON format (default behavior)

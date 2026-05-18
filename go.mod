@@ -1,4 +1,4 @@
-module sentire
+module github.com/andreagrandi/sentire
 
 go 1.24
 

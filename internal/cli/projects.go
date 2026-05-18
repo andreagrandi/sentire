@@ -1,9 +1,9 @@
 package cli
 
 import (
-	"sentire/internal/api"
-	"sentire/internal/cli/formatter"
-	"sentire/internal/client"
+	"github.com/andreagrandi/sentire/internal/api"
+	"github.com/andreagrandi/sentire/internal/cli/formatter"
+	"github.com/andreagrandi/sentire/internal/client"
 
 	"github.com/spf13/cobra"
 )

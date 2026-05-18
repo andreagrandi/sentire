@@ -3,8 +3,8 @@ package cli
 import (
 	"os"
 
+	"github.com/andreagrandi/sentire/internal/version"
 	"github.com/spf13/cobra"
-	"sentire/internal/version"
 )
 
 var rootCmd = &cobra.Command{
