@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/andreagrandi/sentire/internal/api"
 	"github.com/andreagrandi/sentire/pkg/models"
@@ -139,7 +140,7 @@ func TestInspectCommandIntegration(t *testing.T) {
 	// Test that the inspect logic would work
 	// (We can't easily test the CLI command directly in this test framework,
 	// but we can test the underlying API call it makes)
-	event, err := eventsAPI.GetIssueEvent("laterpay", "6796439331", "recommended", nil)
+	event, err := eventsAPI.GetIssueEvent(context.Background(), "laterpay", "6796439331", "recommended", nil)
 	if err != nil {
 		t.Fatalf("GetIssueEvent failed: %v", err)
 	}

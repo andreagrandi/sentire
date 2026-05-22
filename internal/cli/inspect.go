@@ -85,7 +85,7 @@ func runInspect(cmd *cobra.Command, args []string) error {
 	eventsAPI := api.NewEventsAPI(c)
 
 	// Get the recommended event for the issue
-	event, err := eventsAPI.GetIssueEvent(parts.Organization, parts.IssueID, "recommended", nil)
+	event, err := eventsAPI.GetIssueEvent(cmd.Context(), parts.Organization, parts.IssueID, "recommended", nil)
 	if err != nil {
 		return fmt.Errorf("failed to retrieve issue event: %w", err)
 	}

@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/andreagrandi/sentire/internal/api"
 	"github.com/andreagrandi/sentire/pkg/models"
@@ -57,7 +58,7 @@ func TestListOrgProjects(t *testing.T) {
 		Cursor: "test-cursor",
 	}
 
-	projects, pagination, err := orgAPI.ListProjects("test-org", opts)
+	projects, pagination, err := orgAPI.ListProjects(context.Background(), "test-org", opts)
 	if err != nil {
 		t.Fatalf("ListProjects failed: %v", err)
 	}
@@ -162,7 +163,7 @@ func TestGetOrgStats(t *testing.T) {
 		Project:     []string{"1", "2"},
 	}
 
-	stats, err := orgAPI.GetStats("test-org", opts)
+	stats, err := orgAPI.GetStats(context.Background(), "test-org", opts)
 	if err != nil {
 		t.Fatalf("GetStats failed: %v", err)
 	}
@@ -195,14 +196,14 @@ func TestGetStatsWithoutField(t *testing.T) {
 	orgAPI := api.NewOrganizationsAPI(c)
 
 	// Test with nil options
-	_, err := orgAPI.GetStats("test-org", nil)
+	_, err := orgAPI.GetStats(context.Background(), "test-org", nil)
 	if err == nil {
 		t.Error("Expected error when opts is nil")
 	}
 
 	// Test with empty field
 	opts := &api.GetStatsOptions{}
-	_, err = orgAPI.GetStats("test-org", opts)
+	_, err = orgAPI.GetStats(context.Background(), "test-org", opts)
 	if err == nil {
 		t.Error("Expected error when field is empty")
 	}

@@ -217,7 +217,7 @@ Errors are structured JSON when using `--format json` (default):
 | 0 | Success |
 | 1 | General/unknown error |
 | 2 | Authentication error (missing or invalid token) |
-| 3 | API error (4xx/5xx from Sentry) |
+| 3 | API error (4xx/5xx from Sentry), request timeout, or cancellation |
 | 4 | Invalid input (bad slug, ID, URL, or format) |
 
 ### Error Codes
@@ -226,6 +226,8 @@ Errors are structured JSON when using `--format json` (default):
 - `api_error` — Sentry API returned an error
 - `invalid_input` — Bad argument (malformed slug, ID, or URL)
 - `invalid_format` — Unsupported output format
+- `timeout` — Request exceeded the timeout before completing
+- `canceled` — Request canceled before completing (e.g. Ctrl+C)
 
 ## Tips for AI Agents
 

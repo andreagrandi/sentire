@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/andreagrandi/sentire/internal/api"
 	"github.com/andreagrandi/sentire/internal/client"
@@ -68,7 +69,7 @@ func TestListProjectEvents(t *testing.T) {
 		Full:        true,
 	}
 
-	events, pagination, err := eventsAPI.ListProjectEvents("test-org", "test-project", opts)
+	events, pagination, err := eventsAPI.ListProjectEvents(context.Background(), "test-org", "test-project", opts)
 	if err != nil {
 		t.Fatalf("ListProjectEvents failed: %v", err)
 	}
@@ -118,7 +119,7 @@ func TestListIssueEvents(t *testing.T) {
 		Query:       "test query",
 	}
 
-	events, _, err := eventsAPI.ListIssueEvents("test-org", "123", opts)
+	events, _, err := eventsAPI.ListIssueEvents(context.Background(), "test-org", "123", opts)
 	if err != nil {
 		t.Fatalf("ListIssueEvents failed: %v", err)
 	}
@@ -172,7 +173,7 @@ func TestListIssues(t *testing.T) {
 		Limit: 50,
 	}
 
-	issues, _, err := eventsAPI.ListIssues("test-org", opts)
+	issues, _, err := eventsAPI.ListIssues(context.Background(), "test-org", opts)
 	if err != nil {
 		t.Fatalf("ListIssues failed: %v", err)
 	}
@@ -209,7 +210,7 @@ func TestGetProjectEvent(t *testing.T) {
 
 	eventsAPI := api.NewEventsAPI(c)
 
-	event, err := eventsAPI.GetProjectEvent("test-org", "test-project", "event123")
+	event, err := eventsAPI.GetProjectEvent(context.Background(), "test-org", "test-project", "event123")
 	if err != nil {
 		t.Fatalf("GetProjectEvent failed: %v", err)
 	}
@@ -246,7 +247,7 @@ func TestGetIssue(t *testing.T) {
 
 	eventsAPI := api.NewEventsAPI(c)
 
-	issue, err := eventsAPI.GetIssue("test-org", "issue123")
+	issue, err := eventsAPI.GetIssue(context.Background(), "test-org", "issue123")
 	if err != nil {
 		t.Fatalf("GetIssue failed: %v", err)
 	}
@@ -290,7 +291,7 @@ func TestGetIssueEvent(t *testing.T) {
 		Environment: []string{"production"},
 	}
 
-	event, err := eventsAPI.GetIssueEvent("test-org", "issue123", "latest", opts)
+	event, err := eventsAPI.GetIssueEvent(context.Background(), "test-org", "issue123", "latest", opts)
 	if err != nil {
 		t.Fatalf("GetIssueEvent failed: %v", err)
 	}

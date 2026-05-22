@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/andreagrandi/sentire/internal/api"
 	"github.com/andreagrandi/sentire/pkg/models"
@@ -161,7 +162,7 @@ func TestCompleteEventData(t *testing.T) {
 
 	eventsAPI := api.NewEventsAPI(c)
 
-	event, err := eventsAPI.GetProjectEvent("test-org", "test-project", "complete-event-123")
+	event, err := eventsAPI.GetProjectEvent(context.Background(), "test-org", "test-project", "complete-event-123")
 	if err != nil {
 		t.Fatalf("GetProjectEvent failed: %v", err)
 	}

@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"context"
 	"github.com/andreagrandi/sentire/internal/client"
 	"net/http"
 	"net/http/httptest"
@@ -149,7 +150,7 @@ func TestClientGet(t *testing.T) {
 	params := url.Values{}
 	params.Set("test", "value")
 
-	resp, err := c.Get("/test", params)
+	resp, err := c.Get(context.Background(), "/test", params)
 	if err != nil {
 		t.Fatalf("GET request failed: %v", err)
 	}
@@ -177,7 +178,7 @@ func TestClientError(t *testing.T) {
 
 	c.BaseURL = server.URL
 
-	_, err = c.Get("/test", nil)
+	_, err = c.Get(context.Background(), "/test", nil)
 	if err == nil {
 		t.Error("Expected error for 400 response")
 	}
@@ -205,7 +206,7 @@ func TestDecodeJSON(t *testing.T) {
 
 	c.BaseURL = server.URL
 
-	resp, err := c.Get("/test", nil)
+	resp, err := c.Get(context.Background(), "/test", nil)
 	if err != nil {
 		t.Fatalf("GET request failed: %v", err)
 	}

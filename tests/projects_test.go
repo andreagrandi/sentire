@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/andreagrandi/sentire/internal/api"
 	"github.com/andreagrandi/sentire/pkg/models"
@@ -61,7 +62,7 @@ func TestListAllProjects(t *testing.T) {
 		Cursor: "test-cursor",
 	}
 
-	projects, pagination, err := projectsAPI.ListProjects(opts)
+	projects, pagination, err := projectsAPI.ListProjects(context.Background(), opts)
 	if err != nil {
 		t.Fatalf("ListProjects failed: %v", err)
 	}
@@ -115,7 +116,7 @@ func TestListAllProjectsWithNilOptions(t *testing.T) {
 
 	projectsAPI := api.NewProjectsAPI(c)
 
-	projects, _, err := projectsAPI.ListProjects(nil)
+	projects, _, err := projectsAPI.ListProjects(context.Background(), nil)
 	if err != nil {
 		t.Fatalf("ListProjects failed: %v", err)
 	}
@@ -168,7 +169,7 @@ func TestGetProject(t *testing.T) {
 
 	projectsAPI := api.NewProjectsAPI(c)
 
-	project, err := projectsAPI.GetProject("test-org", "test-project")
+	project, err := projectsAPI.GetProject(context.Background(), "test-org", "test-project")
 	if err != nil {
 		t.Fatalf("GetProject failed: %v", err)
 	}
@@ -224,7 +225,7 @@ func TestGetProjectNotFound(t *testing.T) {
 
 	projectsAPI := api.NewProjectsAPI(c)
 
-	_, err := projectsAPI.GetProject("nonexistent-org", "nonexistent-project")
+	_, err := projectsAPI.GetProject(context.Background(), "nonexistent-org", "nonexistent-project")
 	if err == nil {
 		t.Error("Expected error for 404 response")
 	}

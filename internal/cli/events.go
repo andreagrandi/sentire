@@ -149,7 +149,7 @@ func runListProjectEvents(cmd *cobra.Command, args []string) error {
 			opts.Cursor = cursor
 		}
 
-		events, pagination, err := eventsAPI.ListProjectEvents(orgSlug, projectSlug, opts)
+		events, pagination, err := eventsAPI.ListProjectEvents(cmd.Context(), orgSlug, projectSlug, opts)
 		if err != nil {
 			return err
 		}
@@ -217,7 +217,7 @@ func runListIssueEvents(cmd *cobra.Command, args []string) error {
 			opts.Cursor = cursor
 		}
 
-		events, pagination, err := eventsAPI.ListIssueEvents(orgSlug, issueID, opts)
+		events, pagination, err := eventsAPI.ListIssueEvents(cmd.Context(), orgSlug, issueID, opts)
 		if err != nil {
 			return err
 		}
@@ -285,7 +285,7 @@ func runListIssues(cmd *cobra.Command, args []string) error {
 			opts.Cursor = cursor
 		}
 
-		issues, pagination, err := eventsAPI.ListIssues(orgSlug, opts)
+		issues, pagination, err := eventsAPI.ListIssues(cmd.Context(), orgSlug, opts)
 		if err != nil {
 			return err
 		}
@@ -322,7 +322,7 @@ func runGetEvent(cmd *cobra.Command, args []string) error {
 	}
 
 	eventsAPI := api.NewEventsAPI(c)
-	event, err := eventsAPI.GetProjectEvent(orgSlug, projectSlug, eventID)
+	event, err := eventsAPI.GetProjectEvent(cmd.Context(), orgSlug, projectSlug, eventID)
 	if err != nil {
 		return err
 	}
@@ -346,7 +346,7 @@ func runGetIssue(cmd *cobra.Command, args []string) error {
 	}
 
 	eventsAPI := api.NewEventsAPI(c)
-	issue, err := eventsAPI.GetIssue(orgSlug, issueID)
+	issue, err := eventsAPI.GetIssue(cmd.Context(), orgSlug, issueID)
 	if err != nil {
 		return err
 	}
@@ -379,7 +379,7 @@ func runGetIssueEvent(cmd *cobra.Command, args []string) error {
 		opts.Environment = environments
 	}
 
-	event, err := eventsAPI.GetIssueEvent(orgSlug, issueID, eventID, opts)
+	event, err := eventsAPI.GetIssueEvent(cmd.Context(), orgSlug, issueID, eventID, opts)
 	if err != nil {
 		return err
 	}

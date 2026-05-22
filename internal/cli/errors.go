@@ -28,6 +28,8 @@ const (
 	CodeAPIError      = "api_error"
 	CodeInvalidInput  = "invalid_input"
 	CodeInvalidFormat = "invalid_format"
+	CodeTimeout       = "timeout"
+	CodeCanceled      = "canceled"
 )
 
 // CLIError represents a structured error with a machine-readable code
@@ -77,6 +79,24 @@ func NewInvalidFormatError(message string) *CLIError {
 	}
 }
 
+// NewTimeoutError creates a request timeout error
+func NewTimeoutError(message string) *CLIError {
+	return &CLIError{
+		Message:  message,
+		Code:     CodeTimeout,
+		ExitCode: ExitAPI,
+	}
+}
+
+// NewCanceledError creates a request cancellation error
+func NewCanceledError(message string) *CLIError {
+	return &CLIError{
+		Message:  message,
+		Code:     CodeCanceled,
+		ExitCode: ExitAPI,
+	}
+}
+
 // wrapError converts known error types into CLIError
 func wrapError(err error) error {
 	if err == nil {
@@ -88,6 +108,17 @@ func wrapError(err error) error {
 	var authErr *config.AuthError
 	if errors.As(err, &authErr) {
 		return NewAuthError(authErr.Message)
+	}
+	var reqErr *client.RequestError
+	if errors.As(err, &reqErr) {
+		if reqErr.Timeout {
+			return NewTimeoutError(reqErr.Message)
+		}
+		if reqErr.Canceled {
+			return NewCanceledError(reqErr.Message)
+		}
+		// Other transport failures keep the general exit code, matching
+		// the behavior before request errors were typed.
 	}
 	var apiErr *client.APIError
 	if errors.As(err, &apiErr) {
