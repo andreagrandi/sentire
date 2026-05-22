@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -80,7 +81,7 @@ func TestClientAPIErrorRedactsTokenInBody(t *testing.T) {
 	}
 	c.BaseURL = server.URL
 
-	_, err = c.Get("/test", nil)
+	_, err = c.Get(context.Background(), "/test", nil)
 	if err == nil {
 		t.Fatal("Expected error for 401 response")
 	}
@@ -108,7 +109,7 @@ func TestClientTransportErrorRedactsToken(t *testing.T) {
 	}
 	c.BaseURL = "http://invalid.localhost.invalid/" + token
 
-	_, err = c.Get("/test", nil)
+	_, err = c.Get(context.Background(), "/test", nil)
 	if err == nil {
 		t.Fatal("Expected transport error for unreachable host")
 	}

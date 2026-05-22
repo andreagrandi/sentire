@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"github.com/andreagrandi/sentire/internal/client"
 	"github.com/andreagrandi/sentire/pkg/models"
@@ -23,7 +24,7 @@ type ListProjectsOptions struct {
 }
 
 // ListProjects retrieves projects for an organization
-func (o *OrganizationsAPI) ListProjects(orgSlug string, opts *ListProjectsOptions) ([]models.Project, *client.PaginationInfo, error) {
+func (o *OrganizationsAPI) ListProjects(ctx context.Context, orgSlug string, opts *ListProjectsOptions) ([]models.Project, *client.PaginationInfo, error) {
 	endpoint := fmt.Sprintf("/organizations/%s/projects/", orgSlug)
 
 	params := url.Values{}
@@ -31,7 +32,7 @@ func (o *OrganizationsAPI) ListProjects(orgSlug string, opts *ListProjectsOption
 		params.Set("cursor", opts.Cursor)
 	}
 
-	resp, err := o.client.Get(endpoint, params)
+	resp, err := o.client.Get(ctx, endpoint, params)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -59,7 +60,7 @@ type GetStatsOptions struct {
 }
 
 // GetStats retrieves event statistics for an organization
-func (o *OrganizationsAPI) GetStats(orgSlug string, opts *GetStatsOptions) (*models.OrganizationStats, error) {
+func (o *OrganizationsAPI) GetStats(ctx context.Context, orgSlug string, opts *GetStatsOptions) (*models.OrganizationStats, error) {
 	if opts == nil || opts.Field == "" {
 		return nil, fmt.Errorf("field parameter is required")
 	}
@@ -97,7 +98,7 @@ func (o *OrganizationsAPI) GetStats(orgSlug string, opts *GetStatsOptions) (*mod
 		params.Set("download", "true")
 	}
 
-	resp, err := o.client.Get(endpoint, params)
+	resp, err := o.client.Get(ctx, endpoint, params)
 	if err != nil {
 		return nil, err
 	}
