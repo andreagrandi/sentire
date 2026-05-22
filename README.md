@@ -256,43 +256,57 @@ sentire org stats my-org --field="sum(quantity)" --period=7d --project=123 --pro
 sentire events list-issues my-org --environment=production --period=24h --format text
 ```
 
+### Incident triage workflow
+
+The `table`, `text`, and `markdown` formats are tuned for scanning incidents in
+a terminal. Issue lists surface **status**, **priority**, **event/user counts**,
+and a relative **last seen** time (e.g. `3h ago`); single issue and event views
+keep the absolute timestamp and add the relative time in parentheses.
+
+```bash
+# Scan unresolved high/medium priority issues from the last 7 days
+sentire events list-issues my-org \
+  --query="is:unresolved issue.priority:[high,medium]" --period=7d --format table
+
+# Drill into one issue with full timestamps
+sentire events get-issue my-org 123456789 --format text
+```
+
 ### Output Format Comparison
 
 **Table format** (great for terminal viewing):
 ```
-┌──────┬─────────────────────┬───────┬──────────┬─────────┬──────────────────┐
-│  ID  │        TITLE        │ LEVEL │ STATUS   │  COUNT  │   LAST SEEN      │
-├──────┼─────────────────────┼───────┼──────────┼─────────┼──────────────────┤
-│ 1234 │ TypeError in login  │ error │ unresov. │   45    │ 2025-08-30 10:15 │
-│ 1235 │ API timeout         │ warn  │ resolved │   12    │ 2025-08-30 09:30 │
-└──────┴─────────────────────┴───────┴──────────┴─────────┴──────────────────┘
+┌───────────┬──────────────────────────────┬─────────┬────────────┬──────────┬────────┬───────┬───────────┬─────────────┐
+│    ID     │            TITLE             │  LEVEL  │   STATUS   │ PRIORITY │ EVENTS │ USERS │ LAST SEEN │   PROJECT   │
+├───────────┼──────────────────────────────┼─────────┼────────────┼──────────┼────────┼───────┼───────────┼─────────────┤
+│ SENTIRE-1 │ TypeError in login component │ error   │ unresolved │ high     │ 45     │ 23    │ 3h ago    │ web-app     │
+│ SENTIRE-2 │ API timeout on user endpoint │ warning │ resolved   │ medium   │ 12     │ 8     │ 2d ago    │ api-service │
+└───────────┴──────────────────────────────┴─────────┴────────────┴──────────┴────────┴───────┴───────────┴─────────────┘
 ```
 
 **Text format** (simple and scriptable):
 ```
 Issues (2 total):
 
-1. Issue #1234
-   Title: TypeError in login component
-   Level: error | Status: unresolved | Count: 45
-   Project: web-app | Users: 23
-   Last Seen: 2025-08-30 10:15
+1. TypeError in login component
+   ID: SENTIRE-1 | Status: unresolved | Level: error | Priority: high
+   Events: 45 | Users: 23 | Last seen: 3h ago
+   Project: web-app
 
-2. Issue #1235
-   Title: API timeout on user endpoint
-   Level: warning | Status: resolved | Count: 12
-   Project: api-service | Users: 8
-   Last Seen: 2025-08-30 09:30
+2. API timeout on user endpoint
+   ID: SENTIRE-2 | Status: resolved | Level: warning | Priority: medium
+   Events: 12 | Users: 8 | Last seen: 2d ago
+   Project: api-service
 ```
 
 **Markdown format** (documentation-ready):
 ```markdown
 # Issues (2 total)
 
-| ID | Title | Level | Status | Count | Users | Last Seen | Project |
-|----|-------|-------|--------|-------|-------|-----------|---------|
-| 1234 | TypeError in login... | error | unresolved | 45 | 23 | 08-30 10:15 | web-app |
-| 1235 | API timeout on use... | warning | resolved | 12 | 8 | 08-30 09:30 | api-service |
+| ID | Title | Level | Status | Priority | Events | Users | Last Seen | Project |
+|----|-------|-------|--------|----------|--------|-------|-----------|---------|
+| SENTIRE-1 | TypeError in login component | error | unresolved | high | 45 | 23 | 3h ago | web-app |
+| SENTIRE-2 | API timeout on user endpoint | warning | resolved | medium | 12 | 8 | 2d ago | api-service |
 ```
 
 ## API Coverage

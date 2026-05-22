@@ -13,6 +13,8 @@ All notable changes to Sentire will be documented in this file.
 
 ### Changed
 - Request timeouts surface a clear `timeout` error code instead of a generic transport failure
+- Issue lists (`table`, `text`, `markdown`) now show a `Priority` column and relative `Last Seen` times for faster incident triage
+- Event lists (`table`, `text`, `markdown`) show a relative `Created` time; single issue and event views append the relative time to absolute timestamps
 
 ### Fixed
 - Redact `SENTRY_API_TOKEN` from error and verbose output

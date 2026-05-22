@@ -27,8 +27,8 @@ func (f *TextFormatter) FormatEvent(event *models.Event) error {
 	fmt.Fprintf(f.writer, "Type: %s\n", event.Type)
 	fmt.Fprintf(f.writer, "Platform: %s\n", event.Platform)
 	fmt.Fprintf(f.writer, "Project ID: %s\n", event.ProjectID)
-	fmt.Fprintf(f.writer, "Date Created: %s\n", event.DateCreated.Format("2006-01-02 15:04:05"))
-	fmt.Fprintf(f.writer, "Date Received: %s\n", event.DateReceived.Format("2006-01-02 15:04:05"))
+	fmt.Fprintf(f.writer, "Date Created: %s\n", formatTimestamp(event.DateCreated))
+	fmt.Fprintf(f.writer, "Date Received: %s\n", formatTimestamp(event.DateReceived))
 	fmt.Fprintf(f.writer, "Size: %d bytes\n", event.Size)
 
 	if event.GroupID != "" {
@@ -69,13 +69,18 @@ func (f *TextFormatter) FormatEvents(events []models.Event) error {
 	fmt.Fprintf(f.writer, "Events (%d total):\n\n", len(events))
 
 	for i, event := range events {
-		fmt.Fprintf(f.writer, "%d. Event #%s\n", i+1, event.EventID)
-		fmt.Fprintf(f.writer, "   Title: %s\n", event.Title)
-		fmt.Fprintf(f.writer, "   Type: %s | Platform: %s | Project ID: %s\n",
-			event.Type, event.Platform, event.ProjectID)
-		fmt.Fprintf(f.writer, "   Date: %s | Environment: %s\n",
-			event.DateCreated.Format("2006-01-02 15:04"), event.Environment)
-		fmt.Fprintf(f.writer, "\n")
+		fmt.Fprintf(f.writer, "%d. %s\n", i+1, event.Title)
+		fmt.Fprintf(f.writer, "   ID: %s | Type: %s | Platform: %s\n",
+			event.EventID, event.Type, event.Platform)
+
+		meta := fmt.Sprintf("Project ID: %s", event.ProjectID)
+		if event.Environment != "" {
+			meta += " | Environment: " + event.Environment
+		}
+		if rel := relativeTime(event.DateCreated); rel != "" {
+			meta += " | Created: " + rel
+		}
+		fmt.Fprintf(f.writer, "   %s\n\n", meta)
 	}
 
 	return nil
@@ -99,10 +104,10 @@ func (f *TextFormatter) FormatIssue(issue *models.Issue) error {
 
 	fmt.Fprintf(f.writer, "Platform: %s\n", issue.Platform)
 	fmt.Fprintf(f.writer, "Project: %s (%s)\n", issue.Project.Name, issue.Project.Slug)
-	fmt.Fprintf(f.writer, "Count: %s\n", issue.Count)
-	fmt.Fprintf(f.writer, "User Count: %d\n", issue.UserCount)
-	fmt.Fprintf(f.writer, "First Seen: %s\n", issue.FirstSeen.Format("2006-01-02 15:04:05"))
-	fmt.Fprintf(f.writer, "Last Seen: %s\n", issue.LastSeen.Format("2006-01-02 15:04:05"))
+	fmt.Fprintf(f.writer, "Events: %s\n", issue.Count)
+	fmt.Fprintf(f.writer, "Users: %d\n", issue.UserCount)
+	fmt.Fprintf(f.writer, "First Seen: %s\n", formatTimestamp(issue.FirstSeen))
+	fmt.Fprintf(f.writer, "Last Seen: %s\n", formatTimestamp(issue.LastSeen))
 
 	if issue.Culprit != "" {
 		fmt.Fprintf(f.writer, "Culprit: %s\n", issue.Culprit)
@@ -133,15 +138,22 @@ func (f *TextFormatter) FormatIssues(issues []models.Issue) error {
 	fmt.Fprintf(f.writer, "Issues (%d total):\n\n", len(issues))
 
 	for i, issue := range issues {
-		fmt.Fprintf(f.writer, "%d. Issue #%s\n", i+1, issue.ShortID)
-		fmt.Fprintf(f.writer, "   Title: %s\n", issue.Title)
-		fmt.Fprintf(f.writer, "   Level: %s | Status: %s | Count: %s\n",
-			issue.Level, issue.Status, issue.Count)
-		fmt.Fprintf(f.writer, "   Project: %s | Users: %d\n",
-			issue.Project.Slug, issue.UserCount)
-		fmt.Fprintf(f.writer, "   Last Seen: %s\n",
-			issue.LastSeen.Format("2006-01-02 15:04"))
-		fmt.Fprintf(f.writer, "\n")
+		fmt.Fprintf(f.writer, "%d. %s\n", i+1, issue.Title)
+
+		triage := fmt.Sprintf("ID: %s | Status: %s | Level: %s",
+			issue.ShortID, issue.Status, issue.Level)
+		if issue.Priority != "" {
+			triage += " | Priority: " + issue.Priority
+		}
+		fmt.Fprintf(f.writer, "   %s\n", triage)
+
+		counts := fmt.Sprintf("Events: %s | Users: %d", issue.Count, issue.UserCount)
+		if rel := relativeTime(issue.LastSeen); rel != "" {
+			counts += " | Last seen: " + rel
+		}
+		fmt.Fprintf(f.writer, "   %s\n", counts)
+
+		fmt.Fprintf(f.writer, "   Project: %s\n\n", issue.Project.Slug)
 	}
 
 	return nil
