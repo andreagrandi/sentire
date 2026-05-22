@@ -88,6 +88,17 @@ If both are provided, the environment variable takes precedence over the configu
 
 You can obtain an API token from your Sentry organization settings under "Auth Tokens".
 
+### API Base URL
+
+By default Sentire targets Sentry's hosted API at `https://sentry.io/api/0`. To
+use a self-hosted Sentry instance, point `SENTRY_API_BASE_URL` at its API root:
+
+```bash
+export SENTRY_API_BASE_URL=https://sentry.example.com/api/0
+```
+
+When unset, the hosted API is used.
+
 ### Token Safety in Output
 
 Sentire never prints the configured token in standard, verbose, or error

@@ -11,6 +11,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -118,13 +119,24 @@ func NewClient() (*Client, error) {
 	}
 
 	return &Client{
-		BaseURL: BaseURL,
+		BaseURL: resolveBaseURL(),
 		HTTPClient: &http.Client{
 			Timeout: DefaultTimeout,
 		},
 		Token:     cfg.SentryAPIToken,
 		RateLimit: &RateLimiter{},
 	}, nil
+}
+
+// resolveBaseURL returns the API base URL. The SENTRY_API_BASE_URL environment
+// variable overrides the hosted default, so the CLI can target a self-hosted
+// Sentry instance or a local mock server. A trailing slash is trimmed so it
+// joins cleanly with endpoint paths.
+func resolveBaseURL() string {
+	if override := os.Getenv("SENTRY_API_BASE_URL"); override != "" {
+		return strings.TrimRight(override, "/")
+	}
+	return BaseURL
 }
 
 // Do executes an HTTP request and returns the response
