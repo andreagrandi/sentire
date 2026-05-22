@@ -41,6 +41,32 @@ func TestNewClient(t *testing.T) {
 	}
 }
 
+func TestNewClientBaseURLOverride(t *testing.T) {
+	t.Setenv("SENTRY_API_TOKEN", "test-token")
+
+	t.Run("override applied", func(t *testing.T) {
+		t.Setenv("SENTRY_API_BASE_URL", "https://sentry.example.com/api/0")
+		c, err := client.NewClient()
+		if err != nil {
+			t.Fatalf("Expected no error, got %v", err)
+		}
+		if c.BaseURL != "https://sentry.example.com/api/0" {
+			t.Errorf("Expected overridden base URL, got %s", c.BaseURL)
+		}
+	})
+
+	t.Run("trailing slash trimmed", func(t *testing.T) {
+		t.Setenv("SENTRY_API_BASE_URL", "https://sentry.example.com/api/0/")
+		c, err := client.NewClient()
+		if err != nil {
+			t.Fatalf("Expected no error, got %v", err)
+		}
+		if c.BaseURL != "https://sentry.example.com/api/0" {
+			t.Errorf("Expected trailing slash trimmed, got %s", c.BaseURL)
+		}
+	})
+}
+
 func TestClientDo(t *testing.T) {
 	// Create test server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -5,6 +5,7 @@ All notable changes to Sentire will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- `SENTRY_API_BASE_URL` environment variable to target a self-hosted Sentry instance
 - Agent workflow recipes in `context` output and `CONTEXT.md` (triage, URL inspection, release reporting)
 - README section pointing agents at `sentire context` and `sentire describe`
 - Test coverage locking the `describe` output schema and the agent context guide
