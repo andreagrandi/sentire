@@ -151,6 +151,13 @@ sentire events get-issue <organization> <issue-id>
 sentire events get-issue-event <organization> <issue-id> latest
 ```
 
+### Workflows and Troubleshooting
+
+For recipe-style guidance — issue triage, URL inspection, reporting,
+format-by-format examples, and a troubleshooting checklist for auth,
+permissions, filters, and empty results — see
+[`docs/workflows.md`](docs/workflows.md).
+
 ### Agent Workflows
 
 Sentire is designed to be driven by both humans and AI agents. The `context`

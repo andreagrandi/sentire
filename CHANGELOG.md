@@ -10,6 +10,7 @@ All notable changes to Sentire will be documented in this file.
 - README section pointing agents at `sentire context` and `sentire describe`
 - Test coverage locking the `describe` output schema and the agent context guide
 - Contributor and agent guidance for keeping `CHANGELOG.md` updated, plus a PR template prompting for an `[Unreleased]` entry
+- `docs/workflows.md` with recipe-style triage, inspection, and reporting workflows plus a troubleshooting checklist for auth, permissions, filters, and empty results
 - `Ctrl+C` (SIGINT) and SIGTERM cancel in-flight API requests, reported with a `canceled` error code
 
 ### Changed
