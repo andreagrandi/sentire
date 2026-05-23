@@ -25,6 +25,7 @@ All notable changes to Sentire will be documented in this file.
 - Bump `github.com/spf13/cobra` from 1.8.1 to 1.10.2
 - Lower `go.mod` minimum to Go 1.24 and add Go 1.24/1.25 to the CI build matrix
 - API requests use context-aware HTTP request creation, propagating cancellation and deadlines from CLI commands into the client
+- Add `make vet` target and CI step running `go vet ./...`
 
 ## [0.3.0] - 2026-03-07
 
