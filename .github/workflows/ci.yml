@@ -43,6 +43,9 @@ jobs:
     - name: Run tests
       run: make test
 
+    - name: Run vet
+      run: make vet
+
     - name: Run fmt check
       run: |
         if [ "$(gofmt -s -l . | wc -l)" -gt 0 ]; then

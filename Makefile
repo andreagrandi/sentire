@@ -1,4 +1,4 @@
-.PHONY: build test clean install help
+.PHONY: build test clean install help vet
 
 # Default target
 all: build
@@ -53,6 +53,11 @@ lint:
 	@echo "Linting code..."
 	@golangci-lint run
 
+# Run go vet static analysis
+vet:
+	@echo "Running go vet..."
+	@go vet ./...
+
 # Install the binary to GOPATH/bin
 install: build
 	@echo "Installing sentire..."
@@ -77,6 +82,7 @@ help:
 	@echo "  clean         - Remove build artifacts"
 	@echo "  deps          - Install dependencies"
 	@echo "  fmt           - Format code"
+	@echo "  vet           - Run go vet static analysis"
 	@echo "  lint          - Lint code (requires golangci-lint)"
 	@echo "  install       - Install binary to GOPATH/bin"
 	@echo "  help          - Show this help message"
