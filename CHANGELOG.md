@@ -4,6 +4,8 @@ All notable changes to Sentire will be documented in this file.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-05-31
+
 ### Added
 - `SENTRY_API_BASE_URL` environment variable to target a self-hosted Sentry instance
 - Agent workflow recipes in `context` output and `CONTEXT.md` (triage, URL inspection, release reporting)
