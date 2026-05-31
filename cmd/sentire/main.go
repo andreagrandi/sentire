@@ -1,7 +1,7 @@
 package main
 
 import (
-	"sentire/internal/cli"
+	"github.com/andreagrandi/sentire/internal/cli"
 )
 
 func main() {

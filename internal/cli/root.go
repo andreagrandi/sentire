@@ -1,10 +1,13 @@
 package cli
 
 import (
+	"context"
 	"os"
+	"os/signal"
+	"syscall"
 
+	"github.com/andreagrandi/sentire/internal/version"
 	"github.com/spf13/cobra"
-	"sentire/internal/version"
 )
 
 var rootCmd = &cobra.Command{
@@ -20,9 +23,13 @@ Before using sentire, make sure to set your Sentry API token:
 	SilenceErrors: true,
 }
 
-// Execute runs the root command
+// Execute runs the root command. The command context is canceled on SIGINT
+// (Ctrl+C) or SIGTERM so in-flight API requests stop promptly.
 func Execute() {
-	if err := rootCmd.Execute(); err != nil {
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
+	if err := rootCmd.ExecuteContext(ctx); err != nil {
 		format, _ := rootCmd.PersistentFlags().GetString("format")
 		writeErrorOutput(os.Stderr, err, format)
 		os.Exit(exitCodeFromError(err))

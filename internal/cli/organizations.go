@@ -1,9 +1,9 @@
 package cli
 
 import (
-	"sentire/internal/api"
-	"sentire/internal/cli/formatter"
-	"sentire/internal/client"
+	"github.com/andreagrandi/sentire/internal/api"
+	"github.com/andreagrandi/sentire/internal/cli/formatter"
+	"github.com/andreagrandi/sentire/internal/client"
 
 	"github.com/spf13/cobra"
 )
@@ -77,7 +77,7 @@ func runListOrgProjects(cmd *cobra.Command, args []string) error {
 			opts.Cursor = cursor
 		}
 
-		projects, pagination, err := orgAPI.ListProjects(orgSlug, opts)
+		projects, pagination, err := orgAPI.ListProjects(cmd.Context(), orgSlug, opts)
 		if err != nil {
 			return err
 		}
@@ -141,7 +141,7 @@ func runGetOrgStats(cmd *cobra.Command, args []string) error {
 		opts.Download = true
 	}
 
-	stats, err := orgAPI.GetStats(orgSlug, opts)
+	stats, err := orgAPI.GetStats(cmd.Context(), orgSlug, opts)
 	if err != nil {
 		return err
 	}

@@ -1,10 +1,11 @@
 package api
 
 import (
+	"context"
 	"fmt"
+	"github.com/andreagrandi/sentire/internal/client"
+	"github.com/andreagrandi/sentire/pkg/models"
 	"net/url"
-	"sentire/internal/client"
-	"sentire/pkg/models"
 )
 
 // ProjectsAPI provides methods for interacting with Sentry Projects API
@@ -23,7 +24,7 @@ type ListAllProjectsOptions struct {
 }
 
 // ListProjects retrieves all projects the user has access to
-func (p *ProjectsAPI) ListProjects(opts *ListAllProjectsOptions) ([]models.Project, *client.PaginationInfo, error) {
+func (p *ProjectsAPI) ListProjects(ctx context.Context, opts *ListAllProjectsOptions) ([]models.Project, *client.PaginationInfo, error) {
 	endpoint := "/projects/"
 
 	params := url.Values{}
@@ -31,7 +32,7 @@ func (p *ProjectsAPI) ListProjects(opts *ListAllProjectsOptions) ([]models.Proje
 		params.Set("cursor", opts.Cursor)
 	}
 
-	resp, err := p.client.Get(endpoint, params)
+	resp, err := p.client.Get(ctx, endpoint, params)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -45,10 +46,10 @@ func (p *ProjectsAPI) ListProjects(opts *ListAllProjectsOptions) ([]models.Proje
 }
 
 // GetProject retrieves a specific project
-func (p *ProjectsAPI) GetProject(orgSlug, projectSlug string) (*models.Project, error) {
+func (p *ProjectsAPI) GetProject(ctx context.Context, orgSlug, projectSlug string) (*models.Project, error) {
 	endpoint := fmt.Sprintf("/projects/%s/%s/", orgSlug, projectSlug)
 
-	resp, err := p.client.Get(endpoint, nil)
+	resp, err := p.client.Get(ctx, endpoint, nil)
 	if err != nil {
 		return nil, err
 	}

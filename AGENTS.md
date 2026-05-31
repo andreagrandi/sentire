@@ -2,6 +2,81 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Session Start Workflow
+
+Before making code or documentation changes in this repo:
+
+1. Switch back to `master`.
+2. Pull the latest changes with `git pull --ff-only`.
+3. Create a new branch with a short, descriptive name related to the feature being added or the bug being fixed.
+4. Make the requested changes on that branch.
+
+Do not start work from an old feature branch unless the user explicitly asks to continue that branch.
+
+## Adding a Ticket, Issue, or Bug
+
+When the user asks to add a "ticket", "issue", or "bug" to this repo, all of the
+steps below are required — creating the GitHub issue alone is not enough.
+
+**1. Create the issue** with the repo label and an area label:
+
+```bash
+gh issue create --repo andreagrandi/sentire \
+  --title "<concise title>" \
+  --body "<description>" \
+  --label "sentire" \
+  --label "<area>"
+```
+
+- Always apply the `sentire` label — every work item in this repo carries it.
+- Add the matching area label when one exists: `feature`, `ux`, `agent`,
+  `docs`, `security`, `testing`, `release`. The `Reliability` and `Packaging`
+  areas have no label; for those, set only the project Area field (step 3).
+- Add a type label when it fits: `bug` (bug report), `enhancement` (feature
+  request), or `documentation` (docs-only work).
+
+**2. Add the issue to the "CLI Tools" project** and capture the item ID
+(https://github.com/users/andreagrandi/projects/1):
+
+```bash
+ITEM_ID=$(gh project item-add 1 --owner andreagrandi \
+  --url <issue-url> --format json --jq .id)
+```
+
+**3. Set Priority, Area, and Status** on the project item. The project and
+field IDs are identical for every repo on this board:
+
+- Project ID: `PVT_kwHOAAm1584BYDlZ`
+- Priority — field `PVTSSF_lAHOAAm1584BYDlZzhTMDck`:
+  High `ed3787e3`, Medium `3e3ea407`, Low `994234f4`
+- Area — field `PVTSSF_lAHOAAm1584BYDlZzhTMDco`:
+  Reliability `6595432d`, Packaging `6895c50a`, UX `2bc024bb`,
+  Testing `0d5bc016`, Feature `6390f97d`, Agent `3a2d6f7e`,
+  Docs `f5c50514`, Security `062d12a3`, Release `b344aeab`
+- Status — field `PVTSSF_lAHOAAm1584BYDlZzhTMDNQ`:
+  Todo `f75ad846`, In Progress `47fc9ee4`, Done `98236657`
+
+```bash
+# Priority — always set it
+gh project item-edit --id "$ITEM_ID" --project-id PVT_kwHOAAm1584BYDlZ \
+  --field-id PVTSSF_lAHOAAm1584BYDlZzhTMDck \
+  --single-select-option-id <priority-option-id>
+
+# Area — match the area label from step 1
+gh project item-edit --id "$ITEM_ID" --project-id PVT_kwHOAAm1584BYDlZ \
+  --field-id PVTSSF_lAHOAAm1584BYDlZzhTMDco \
+  --single-select-option-id <area-option-id>
+
+# Status — new tickets start as Todo
+gh project item-edit --id "$ITEM_ID" --project-id PVT_kwHOAAm1584BYDlZ \
+  --field-id PVTSSF_lAHOAAm1584BYDlZzhTMDNQ \
+  --single-select-option-id f75ad846
+```
+
+If the user does not state a priority or area, ask before creating the issue.
+Follow the conventions of existing project issues — do not invent new labels or
+fields.
+
 ## Project Overview
 
 Sentire is a CLI tool for the Sentry API written in Go, providing comprehensive access to Sentry's debugging data including complete stack traces, contexts, and event details. The tool features both 1:1 API mapping commands and user-friendly custom commands like `inspect` for parsing Sentry URLs.
@@ -91,6 +166,42 @@ Critical model components:
 All commands output JSON by default with proper indentation. The `inspect` command demonstrates the user-friendly approach - parse URLs that users commonly encounter (from Slack notifications, emails) and provide immediate access to debugging data.
 
 Commands follow the pattern: `./sentire <resource> <action> [args] [flags]` with the exception of the custom `inspect` command which prioritizes ease of use over API consistency.
+
+## Changelog
+
+`CHANGELOG.md` is the canonical record of user-visible changes. Update it in
+the same change that introduces the behaviour — not as a follow-up.
+
+### When to add an entry
+
+Add an entry when a change affects any of:
+
+- CLI surface (new/renamed/removed commands, flags, arguments, defaults)
+- Observable behaviour (output shape, exit codes, error messages, env vars)
+- Packaging or installation (release artifacts, Homebrew tap, `go install` path)
+- Configuration file format or supported locations
+- Dependency bumps that ship in the binary or change the minimum Go version
+- Agent-facing contracts: `describe` schema, `context` output, CONTEXT.md guidance
+
+Skip the changelog only for changes with no user-visible effect: internal
+refactors, test-only changes, CI tweaks that do not ship, formatting, or
+edits to private agent instructions (AGENTS.md / .opencode/).
+
+### How to add an entry
+
+- Add the entry under `## [Unreleased]` at the top of `CHANGELOG.md`. Do not
+  invent a new version heading — the release workflow promotes `[Unreleased]`
+  when the version is bumped.
+- Use the existing subsections: `Added`, `Changed`, `Fixed`, `Technical`.
+  Create a subsection only if it is missing and your change needs it.
+- Keep entries to a single line each. Lead with the user-facing effect, not
+  the implementation detail. Reference the command or flag explicitly when
+  relevant (e.g. ``Add `--all` flag to `events list-issues```).
+- Group related changes into one entry rather than splitting per-commit.
+
+Before opening a PR, check that `CHANGELOG.md` has an `[Unreleased]` entry
+covering your change, or be ready to explain in the PR why no entry is
+needed.
 
 ## New release
 
