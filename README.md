@@ -59,6 +59,10 @@ Set your Sentry API token as an environment variable:
 export SENTRY_API_TOKEN=your_sentry_api_token_here
 ```
 
+To avoid recording the token in your shell history, prefix the command with a
+space (when `HISTCONTROL` includes `ignorespace`) or load it from a credential
+manager.
+
 ### Configuration File
 
 Alternatively, you can create a configuration file at `~/.config/sentire/config.json`:
@@ -69,6 +73,12 @@ Alternatively, you can create a configuration file at `~/.config/sentire/config.
 }
 ```
 
+Restrict access to that file so other users on the system cannot read it:
+
+```bash
+chmod 600 ~/.config/sentire/config.json
+```
+
 ### Configuration Precedence
 
 If both are provided, the environment variable takes precedence over the configuration file. This allows you to:
@@ -77,6 +87,26 @@ If both are provided, the environment variable takes precedence over the configu
 - Override it temporarily with an environment variable when needed
 
 You can obtain an API token from your Sentry organization settings under "Auth Tokens".
+
+### API Base URL
+
+By default Sentire targets Sentry's hosted API at `https://sentry.io/api/0`. To
+use a self-hosted Sentry instance, point `SENTRY_API_BASE_URL` at its API root:
+
+```bash
+export SENTRY_API_BASE_URL=https://sentry.example.com/api/0
+```
+
+When unset, the hosted API is used.
+
+### Token Safety in Output
+
+Sentire never prints the configured token in standard, verbose, or error
+output: the API response body included in error messages and the final CLI
+error writer both run through a redaction helper that replaces the token with
+`[REDACTED]`. Do not share raw command output that contains your token (for
+example, if you pasted it directly into the URL or another argument), since
+only the configured token can be redacted automatically.
 
 ## Usage
 
@@ -120,6 +150,34 @@ sentire events get-issue <organization> <issue-id>
 # Get an issue event (latest, oldest, recommended, or specific ID)
 sentire events get-issue-event <organization> <issue-id> latest
 ```
+
+### Workflows and Troubleshooting
+
+For recipe-style guidance — issue triage, URL inspection, reporting,
+format-by-format examples, and a troubleshooting checklist for auth,
+permissions, filters, and empty results — see
+[`docs/workflows.md`](docs/workflows.md).
+
+### Agent Workflows
+
+Sentire is designed to be driven by both humans and AI agents. The `context`
+command prints an agent-oriented guide (also embedded as
+[`CONTEXT.md`](CONTEXT.md)) covering authentication, output control, query
+syntax, and end-to-end workflows for issue triage, URL inspection, and
+release reporting:
+
+```bash
+# Print the agent guide
+sentire context
+
+# Discover commands and their JSON output schema
+sentire describe
+sentire describe events list-issues
+```
+
+For machine consumption, prefer `--format json` (default) or `--format ndjson`
+together with `--fields` to keep payloads small. The `table`, `text`, and
+`markdown` formats are intended for humans and are not stable for parsing.
 
 ### URL Inspection
 
@@ -216,43 +274,57 @@ sentire org stats my-org --field="sum(quantity)" --period=7d --project=123 --pro
 sentire events list-issues my-org --environment=production --period=24h --format text
 ```
 
+### Incident triage workflow
+
+The `table`, `text`, and `markdown` formats are tuned for scanning incidents in
+a terminal. Issue lists surface **status**, **priority**, **event/user counts**,
+and a relative **last seen** time (e.g. `3h ago`); single issue and event views
+keep the absolute timestamp and add the relative time in parentheses.
+
+```bash
+# Scan unresolved high/medium priority issues from the last 7 days
+sentire events list-issues my-org \
+  --query="is:unresolved issue.priority:[high,medium]" --period=7d --format table
+
+# Drill into one issue with full timestamps
+sentire events get-issue my-org 123456789 --format text
+```
+
 ### Output Format Comparison
 
 **Table format** (great for terminal viewing):
 ```
-┌──────┬─────────────────────┬───────┬──────────┬─────────┬──────────────────┐
-│  ID  │        TITLE        │ LEVEL │ STATUS   │  COUNT  │   LAST SEEN      │
-├──────┼─────────────────────┼───────┼──────────┼─────────┼──────────────────┤
-│ 1234 │ TypeError in login  │ error │ unresov. │   45    │ 2025-08-30 10:15 │
-│ 1235 │ API timeout         │ warn  │ resolved │   12    │ 2025-08-30 09:30 │
-└──────┴─────────────────────┴───────┴──────────┴─────────┴──────────────────┘
+┌───────────┬──────────────────────────────┬─────────┬────────────┬──────────┬────────┬───────┬───────────┬─────────────┐
+│    ID     │            TITLE             │  LEVEL  │   STATUS   │ PRIORITY │ EVENTS │ USERS │ LAST SEEN │   PROJECT   │
+├───────────┼──────────────────────────────┼─────────┼────────────┼──────────┼────────┼───────┼───────────┼─────────────┤
+│ SENTIRE-1 │ TypeError in login component │ error   │ unresolved │ high     │ 45     │ 23    │ 3h ago    │ web-app     │
+│ SENTIRE-2 │ API timeout on user endpoint │ warning │ resolved   │ medium   │ 12     │ 8     │ 2d ago    │ api-service │
+└───────────┴──────────────────────────────┴─────────┴────────────┴──────────┴────────┴───────┴───────────┴─────────────┘
 ```
 
 **Text format** (simple and scriptable):
 ```
 Issues (2 total):
 
-1. Issue #1234
-   Title: TypeError in login component
-   Level: error | Status: unresolved | Count: 45
-   Project: web-app | Users: 23
-   Last Seen: 2025-08-30 10:15
+1. TypeError in login component
+   ID: SENTIRE-1 | Status: unresolved | Level: error | Priority: high
+   Events: 45 | Users: 23 | Last seen: 3h ago
+   Project: web-app
 
-2. Issue #1235
-   Title: API timeout on user endpoint
-   Level: warning | Status: resolved | Count: 12
-   Project: api-service | Users: 8
-   Last Seen: 2025-08-30 09:30
+2. API timeout on user endpoint
+   ID: SENTIRE-2 | Status: resolved | Level: warning | Priority: medium
+   Events: 12 | Users: 8 | Last seen: 2d ago
+   Project: api-service
 ```
 
 **Markdown format** (documentation-ready):
 ```markdown
 # Issues (2 total)
 
-| ID | Title | Level | Status | Count | Users | Last Seen | Project |
-|----|-------|-------|--------|-------|-------|-----------|---------|
-| 1234 | TypeError in login... | error | unresolved | 45 | 23 | 08-30 10:15 | web-app |
-| 1235 | API timeout on use... | warning | resolved | 12 | 8 | 08-30 09:30 | api-service |
+| ID | Title | Level | Status | Priority | Events | Users | Last Seen | Project |
+|----|-------|-------|--------|----------|--------|-------|-----------|---------|
+| SENTIRE-1 | TypeError in login component | error | unresolved | high | 45 | 23 | 3h ago | web-app |
+| SENTIRE-2 | API timeout on user endpoint | warning | resolved | medium | 12 | 8 | 2d ago | api-service |
 ```
 
 ## API Coverage
@@ -315,6 +387,24 @@ To bypass the hook temporarily (not recommended):
 ```bash
 git commit --no-verify
 ```
+
+## Releases
+
+See [`docs/releases.md`](docs/releases.md) for the release pipeline overview
+and the post-release verification checklist for `go install`, the GitHub
+release artifacts, and the Homebrew tap.
+
+## Changelog
+
+User-visible changes are tracked in [`CHANGELOG.md`](CHANGELOG.md). When you
+open a PR, add an entry under `## [Unreleased]` for any change that affects
+commands, flags, output, packaging, configuration, dependencies that ship in
+the binary, or the agent-facing `describe` / `context` contracts. Pure
+internal refactors, tests, and CI tweaks do not need an entry.
+
+Use the existing `Added` / `Changed` / `Fixed` / `Technical` subsections and
+keep each entry to a single line that leads with the user-facing effect. See
+`AGENTS.md` for the full workflow.
 
 ## Testing
 

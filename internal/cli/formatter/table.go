@@ -2,9 +2,9 @@ package formatter
 
 import (
 	"fmt"
+	"github.com/andreagrandi/sentire/pkg/models"
 	"io"
 	"reflect"
-	"sentire/pkg/models"
 	"strconv"
 
 	"github.com/olekukonko/tablewriter"
@@ -33,8 +33,8 @@ func (f *TableFormatter) FormatEvent(event *models.Event) error {
 		{"Platform", event.Platform},
 		{"Type", event.Type},
 		{"Project ID", event.ProjectID},
-		{"Date Created", event.DateCreated.Format("2006-01-02 15:04:05")},
-		{"Date Received", event.DateReceived.Format("2006-01-02 15:04:05")},
+		{"Date Created", formatTimestamp(event.DateCreated)},
+		{"Date Received", formatTimestamp(event.DateReceived)},
 		{"Size", strconv.FormatInt(event.Size, 10)},
 	}
 
@@ -70,17 +70,17 @@ func (f *TableFormatter) FormatEvents(events []models.Event) error {
 	}
 
 	table := tablewriter.NewWriter(f.writer)
-	table.Header("ID", "Title", "Type", "Platform", "Project ID", "Date Created", "Environment")
+	table.Header("ID", "Title", "Type", "Platform", "Project ID", "Created", "Environment")
 
 	for _, event := range events {
 		row := []string{
 			event.EventID,
-			truncateString(event.Title, 30),
+			truncateString(event.Title, 40),
 			event.Type,
 			event.Platform,
 			event.ProjectID,
-			event.DateCreated.Format("2006-01-02 15:04"),
-			event.Environment,
+			dashIfEmpty(relativeTime(event.DateCreated)),
+			dashIfEmpty(event.Environment),
 		}
 		err := table.Append(row)
 		if err != nil {
@@ -105,10 +105,10 @@ func (f *TableFormatter) FormatIssue(issue *models.Issue) error {
 		{"Status", issue.Status},
 		{"Platform", issue.Platform},
 		{"Project", fmt.Sprintf("%s (%s)", issue.Project.Name, issue.Project.Slug)},
-		{"Count", issue.Count},
-		{"User Count", strconv.Itoa(issue.UserCount)},
-		{"First Seen", issue.FirstSeen.Format("2006-01-02 15:04:05")},
-		{"Last Seen", issue.LastSeen.Format("2006-01-02 15:04:05")},
+		{"Events", issue.Count},
+		{"Users", strconv.Itoa(issue.UserCount)},
+		{"First Seen", formatTimestamp(issue.FirstSeen)},
+		{"Last Seen", formatTimestamp(issue.LastSeen)},
 		{"Is Public", strconv.FormatBool(issue.IsPublic)},
 		{"Is Bookmarked", strconv.FormatBool(issue.IsBookmarked)},
 		{"Is Subscribed", strconv.FormatBool(issue.IsSubscribed)},
@@ -146,17 +146,18 @@ func (f *TableFormatter) FormatIssues(issues []models.Issue) error {
 	}
 
 	table := tablewriter.NewWriter(f.writer)
-	table.Header("ID", "Title", "Level", "Status", "Count", "User Count", "Last Seen", "Project")
+	table.Header("ID", "Title", "Level", "Status", "Priority", "Events", "Users", "Last Seen", "Project")
 
 	for _, issue := range issues {
 		row := []string{
 			issue.ShortID,
-			truncateString(issue.Title, 30),
+			truncateString(issue.Title, 40),
 			issue.Level,
 			issue.Status,
+			dashIfEmpty(issue.Priority),
 			issue.Count,
 			strconv.Itoa(issue.UserCount),
-			issue.LastSeen.Format("01-02 15:04"),
+			dashIfEmpty(relativeTime(issue.LastSeen)),
 			issue.Project.Slug,
 		}
 		err := table.Append(row)

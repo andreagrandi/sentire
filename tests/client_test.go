@@ -1,11 +1,12 @@
 package tests
 
 import (
+	"context"
+	"github.com/andreagrandi/sentire/internal/client"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"os"
-	"sentire/internal/client"
 	"strings"
 	"testing"
 	"time"
@@ -38,6 +39,32 @@ func TestNewClient(t *testing.T) {
 	if c.BaseURL != client.BaseURL {
 		t.Errorf("Expected base URL %s, got %s", client.BaseURL, c.BaseURL)
 	}
+}
+
+func TestNewClientBaseURLOverride(t *testing.T) {
+	t.Setenv("SENTRY_API_TOKEN", "test-token")
+
+	t.Run("override applied", func(t *testing.T) {
+		t.Setenv("SENTRY_API_BASE_URL", "https://sentry.example.com/api/0")
+		c, err := client.NewClient()
+		if err != nil {
+			t.Fatalf("Expected no error, got %v", err)
+		}
+		if c.BaseURL != "https://sentry.example.com/api/0" {
+			t.Errorf("Expected overridden base URL, got %s", c.BaseURL)
+		}
+	})
+
+	t.Run("trailing slash trimmed", func(t *testing.T) {
+		t.Setenv("SENTRY_API_BASE_URL", "https://sentry.example.com/api/0/")
+		c, err := client.NewClient()
+		if err != nil {
+			t.Fatalf("Expected no error, got %v", err)
+		}
+		if c.BaseURL != "https://sentry.example.com/api/0" {
+			t.Errorf("Expected trailing slash trimmed, got %s", c.BaseURL)
+		}
+	})
 }
 
 func TestClientDo(t *testing.T) {
@@ -149,7 +176,7 @@ func TestClientGet(t *testing.T) {
 	params := url.Values{}
 	params.Set("test", "value")
 
-	resp, err := c.Get("/test", params)
+	resp, err := c.Get(context.Background(), "/test", params)
 	if err != nil {
 		t.Fatalf("GET request failed: %v", err)
 	}
@@ -177,7 +204,7 @@ func TestClientError(t *testing.T) {
 
 	c.BaseURL = server.URL
 
-	_, err = c.Get("/test", nil)
+	_, err = c.Get(context.Background(), "/test", nil)
 	if err == nil {
 		t.Error("Expected error for 400 response")
 	}
@@ -205,7 +232,7 @@ func TestDecodeJSON(t *testing.T) {
 
 	c.BaseURL = server.URL
 
-	resp, err := c.Get("/test", nil)
+	resp, err := c.Get(context.Background(), "/test", nil)
 	if err != nil {
 		t.Fatalf("GET request failed: %v", err)
 	}

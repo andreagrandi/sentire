@@ -1,10 +1,11 @@
 package api
 
 import (
+	"context"
 	"fmt"
+	"github.com/andreagrandi/sentire/internal/client"
+	"github.com/andreagrandi/sentire/pkg/models"
 	"net/url"
-	"sentire/internal/client"
-	"sentire/pkg/models"
 )
 
 // EventsAPI provides methods for interacting with Sentry Events API
@@ -28,7 +29,7 @@ type ListProjectEventsOptions struct {
 }
 
 // ListProjectEvents retrieves events for a specific project
-func (e *EventsAPI) ListProjectEvents(orgSlug, projectSlug string, opts *ListProjectEventsOptions) ([]models.Event, *client.PaginationInfo, error) {
+func (e *EventsAPI) ListProjectEvents(ctx context.Context, orgSlug, projectSlug string, opts *ListProjectEventsOptions) ([]models.Event, *client.PaginationInfo, error) {
 	endpoint := fmt.Sprintf("/projects/%s/%s/events/", orgSlug, projectSlug)
 
 	params := url.Values{}
@@ -53,7 +54,7 @@ func (e *EventsAPI) ListProjectEvents(orgSlug, projectSlug string, opts *ListPro
 		}
 	}
 
-	resp, err := e.client.Get(endpoint, params)
+	resp, err := e.client.Get(ctx, endpoint, params)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -79,7 +80,7 @@ type ListIssueEventsOptions struct {
 }
 
 // ListIssueEvents retrieves events for a specific issue
-func (e *EventsAPI) ListIssueEvents(orgSlug string, issueID string, opts *ListIssueEventsOptions) ([]models.Event, *client.PaginationInfo, error) {
+func (e *EventsAPI) ListIssueEvents(ctx context.Context, orgSlug string, issueID string, opts *ListIssueEventsOptions) ([]models.Event, *client.PaginationInfo, error) {
 	endpoint := fmt.Sprintf("/organizations/%s/issues/%s/events/", orgSlug, issueID)
 
 	params := url.Values{}
@@ -110,7 +111,7 @@ func (e *EventsAPI) ListIssueEvents(orgSlug string, issueID string, opts *ListIs
 		}
 	}
 
-	resp, err := e.client.Get(endpoint, params)
+	resp, err := e.client.Get(ctx, endpoint, params)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -137,7 +138,7 @@ type ListIssuesOptions struct {
 }
 
 // ListIssues retrieves issues for an organization
-func (e *EventsAPI) ListIssues(orgSlug string, opts *ListIssuesOptions) ([]models.Issue, *client.PaginationInfo, error) {
+func (e *EventsAPI) ListIssues(ctx context.Context, orgSlug string, opts *ListIssuesOptions) ([]models.Issue, *client.PaginationInfo, error) {
 	endpoint := fmt.Sprintf("/organizations/%s/issues/", orgSlug)
 
 	params := url.Values{}
@@ -171,7 +172,7 @@ func (e *EventsAPI) ListIssues(orgSlug string, opts *ListIssuesOptions) ([]model
 		}
 	}
 
-	resp, err := e.client.Get(endpoint, params)
+	resp, err := e.client.Get(ctx, endpoint, params)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -185,10 +186,10 @@ func (e *EventsAPI) ListIssues(orgSlug string, opts *ListIssuesOptions) ([]model
 }
 
 // GetProjectEvent retrieves a specific event for a project
-func (e *EventsAPI) GetProjectEvent(orgSlug, projectSlug, eventID string) (*models.Event, error) {
+func (e *EventsAPI) GetProjectEvent(ctx context.Context, orgSlug, projectSlug, eventID string) (*models.Event, error) {
 	endpoint := fmt.Sprintf("/projects/%s/%s/events/%s/", orgSlug, projectSlug, eventID)
 
-	resp, err := e.client.Get(endpoint, nil)
+	resp, err := e.client.Get(ctx, endpoint, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -202,10 +203,10 @@ func (e *EventsAPI) GetProjectEvent(orgSlug, projectSlug, eventID string) (*mode
 }
 
 // GetIssue retrieves a specific issue
-func (e *EventsAPI) GetIssue(orgSlug, issueID string) (*models.Issue, error) {
+func (e *EventsAPI) GetIssue(ctx context.Context, orgSlug, issueID string) (*models.Issue, error) {
 	endpoint := fmt.Sprintf("/organizations/%s/issues/%s/", orgSlug, issueID)
 
-	resp, err := e.client.Get(endpoint, nil)
+	resp, err := e.client.Get(ctx, endpoint, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -224,7 +225,7 @@ type GetIssueEventOptions struct {
 }
 
 // GetIssueEvent retrieves a specific event for an issue
-func (e *EventsAPI) GetIssueEvent(orgSlug, issueID, eventID string, opts *GetIssueEventOptions) (*models.Event, error) {
+func (e *EventsAPI) GetIssueEvent(ctx context.Context, orgSlug, issueID, eventID string, opts *GetIssueEventOptions) (*models.Event, error) {
 	endpoint := fmt.Sprintf("/organizations/%s/issues/%s/events/%s/", orgSlug, issueID, eventID)
 
 	params := url.Values{}
@@ -234,7 +235,7 @@ func (e *EventsAPI) GetIssueEvent(orgSlug, issueID, eventID string, opts *GetIss
 		}
 	}
 
-	resp, err := e.client.Get(endpoint, params)
+	resp, err := e.client.Get(ctx, endpoint, params)
 	if err != nil {
 		return nil, err
 	}

@@ -3,9 +3,9 @@ package cli
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/andreagrandi/sentire/pkg/models"
 	"os"
 	"reflect"
-	"sentire/pkg/models"
 	"strings"
 
 	"github.com/spf13/cobra"

@@ -1,4 +1,4 @@
-.PHONY: build test clean install help
+.PHONY: build test clean install help vet smoke-install smoke-release
 
 # Default target
 all: build
@@ -6,7 +6,7 @@ all: build
 # Variables for version injection
 BUILD_TIME := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 GIT_COMMIT := $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-LDFLAGS := -X sentire/internal/version.BuildTime=$(BUILD_TIME) -X sentire/internal/version.GitCommit=$(GIT_COMMIT)
+LDFLAGS := -X github.com/andreagrandi/sentire/internal/version.BuildTime=$(BUILD_TIME) -X github.com/andreagrandi/sentire/internal/version.GitCommit=$(GIT_COMMIT)
 
 # Build the application
 build:
@@ -53,10 +53,25 @@ lint:
 	@echo "Linting code..."
 	@golangci-lint run
 
+# Run go vet static analysis
+vet:
+	@echo "Running go vet..."
+	@go vet ./...
+
 # Install the binary to GOPATH/bin
 install: build
 	@echo "Installing sentire..."
 	@cp sentire $(GOPATH)/bin/
+
+# Run the `go install` smoke test (mirrors the public install path)
+smoke-install:
+	@echo "Running go install smoke test..."
+	@go test ./tests/ -run TestGoInstallSmoke -v -count=1
+
+# Run the goreleaser snapshot smoke test (requires goreleaser locally)
+smoke-release:
+	@echo "Running release artifact smoke test..."
+	@SENTIRE_SMOKE_RELEASE=1 go test ./tests/ -run TestGoreleaserSnapshotSmoke -v -count=1 -timeout 10m
 
 # Cross-compile for multiple platforms
 build-all:
@@ -77,6 +92,9 @@ help:
 	@echo "  clean         - Remove build artifacts"
 	@echo "  deps          - Install dependencies"
 	@echo "  fmt           - Format code"
+	@echo "  vet           - Run go vet static analysis"
 	@echo "  lint          - Lint code (requires golangci-lint)"
 	@echo "  install       - Install binary to GOPATH/bin"
+	@echo "  smoke-install - Run go install smoke test against the local module"
+	@echo "  smoke-release - Build a goreleaser snapshot and smoke-test the archive (requires goreleaser)"
 	@echo "  help          - Show this help message"

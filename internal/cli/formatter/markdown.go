@@ -2,9 +2,9 @@ package formatter
 
 import (
 	"fmt"
+	"github.com/andreagrandi/sentire/pkg/models"
 	"io"
 	"reflect"
-	"sentire/pkg/models"
 	"strings"
 )
 
@@ -29,8 +29,8 @@ func (f *MarkdownFormatter) FormatEvent(event *models.Event) error {
 	fmt.Fprintf(f.writer, "**Type**: %s  \n", event.Type)
 	fmt.Fprintf(f.writer, "**Platform**: %s  \n", event.Platform)
 	fmt.Fprintf(f.writer, "**Project ID**: %s  \n", event.ProjectID)
-	fmt.Fprintf(f.writer, "**Date Created**: %s  \n", event.DateCreated.Format("2006-01-02 15:04:05"))
-	fmt.Fprintf(f.writer, "**Date Received**: %s  \n", event.DateReceived.Format("2006-01-02 15:04:05"))
+	fmt.Fprintf(f.writer, "**Date Created**: %s  \n", formatTimestamp(event.DateCreated))
+	fmt.Fprintf(f.writer, "**Date Received**: %s  \n", formatTimestamp(event.DateReceived))
 	fmt.Fprintf(f.writer, "**Size**: %d bytes  \n", event.Size)
 
 	if event.GroupID != "" {
@@ -72,18 +72,18 @@ func (f *MarkdownFormatter) FormatEvents(events []models.Event) error {
 	fmt.Fprintf(f.writer, "# Events (%d total)\n\n", len(events))
 
 	// Create markdown table
-	fmt.Fprintf(f.writer, "| ID | Title | Type | Platform | Project ID | Date | Environment |\n")
+	fmt.Fprintf(f.writer, "| ID | Title | Type | Platform | Project ID | Created | Environment |\n")
 	fmt.Fprintf(f.writer, "|----|----|----|----|----|----|----|\n")
 
 	for _, event := range events {
 		fmt.Fprintf(f.writer, "| %s | %s | %s | %s | %s | %s | %s |\n",
 			event.EventID,
-			escapeMarkdown(truncateString(event.Title, 20)),
+			escapeMarkdown(truncateString(event.Title, 40)),
 			event.Type,
 			event.Platform,
 			event.ProjectID,
-			event.DateCreated.Format("01-02 15:04"),
-			event.Environment)
+			dashIfEmpty(relativeTime(event.DateCreated)),
+			dashIfEmpty(event.Environment))
 	}
 
 	fmt.Fprintf(f.writer, "\n")
@@ -110,10 +110,10 @@ func (f *MarkdownFormatter) FormatIssue(issue *models.Issue) error {
 
 	fmt.Fprintf(f.writer, "**Platform**: %s  \n", issue.Platform)
 	fmt.Fprintf(f.writer, "**Project**: %s (%s)  \n", issue.Project.Name, issue.Project.Slug)
-	fmt.Fprintf(f.writer, "**Count**: %s  \n", issue.Count)
-	fmt.Fprintf(f.writer, "**User Count**: %d  \n", issue.UserCount)
-	fmt.Fprintf(f.writer, "**First Seen**: %s  \n", issue.FirstSeen.Format("2006-01-02 15:04:05"))
-	fmt.Fprintf(f.writer, "**Last Seen**: %s  \n", issue.LastSeen.Format("2006-01-02 15:04:05"))
+	fmt.Fprintf(f.writer, "**Events**: %s  \n", issue.Count)
+	fmt.Fprintf(f.writer, "**Users**: %d  \n", issue.UserCount)
+	fmt.Fprintf(f.writer, "**First Seen**: %s  \n", formatTimestamp(issue.FirstSeen))
+	fmt.Fprintf(f.writer, "**Last Seen**: %s  \n", formatTimestamp(issue.LastSeen))
 
 	if issue.Culprit != "" {
 		fmt.Fprintf(f.writer, "**Culprit**: %s  \n", issue.Culprit)
@@ -144,18 +144,19 @@ func (f *MarkdownFormatter) FormatIssues(issues []models.Issue) error {
 	fmt.Fprintf(f.writer, "# Issues (%d total)\n\n", len(issues))
 
 	// Create markdown table
-	fmt.Fprintf(f.writer, "| ID | Title | Level | Status | Count | Users | Last Seen | Project |\n")
-	fmt.Fprintf(f.writer, "|----|----|----|----|----|----|----|----|\n")
+	fmt.Fprintf(f.writer, "| ID | Title | Level | Status | Priority | Events | Users | Last Seen | Project |\n")
+	fmt.Fprintf(f.writer, "|----|----|----|----|----|----|----|----|----|\n")
 
 	for _, issue := range issues {
-		fmt.Fprintf(f.writer, "| %s | %s | %s | %s | %s | %d | %s | %s |\n",
+		fmt.Fprintf(f.writer, "| %s | %s | %s | %s | %s | %s | %d | %s | %s |\n",
 			issue.ShortID,
-			escapeMarkdown(truncateString(issue.Title, 25)),
+			escapeMarkdown(truncateString(issue.Title, 40)),
 			issue.Level,
 			issue.Status,
+			dashIfEmpty(issue.Priority),
 			issue.Count,
 			issue.UserCount,
-			issue.LastSeen.Format("01-02 15:04"),
+			dashIfEmpty(relativeTime(issue.LastSeen)),
 			issue.Project.Slug)
 	}
 

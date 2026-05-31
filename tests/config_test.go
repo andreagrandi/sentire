@@ -2,9 +2,9 @@ package tests
 
 import (
 	"encoding/json"
+	"github.com/andreagrandi/sentire/internal/config"
 	"os"
 	"path/filepath"
-	"sentire/internal/config"
 	"testing"
 )
 

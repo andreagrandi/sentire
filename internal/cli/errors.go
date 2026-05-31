@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/andreagrandi/sentire/internal/cli/formatter"
+	"github.com/andreagrandi/sentire/internal/client"
+	"github.com/andreagrandi/sentire/internal/config"
+	"github.com/andreagrandi/sentire/internal/redact"
 	"io"
-	"sentire/internal/cli/formatter"
-	"sentire/internal/client"
-	"sentire/internal/config"
+	"os"
 )
 
 // Exit codes for different error categories
@@ -26,6 +28,8 @@ const (
 	CodeAPIError      = "api_error"
 	CodeInvalidInput  = "invalid_input"
 	CodeInvalidFormat = "invalid_format"
+	CodeTimeout       = "timeout"
+	CodeCanceled      = "canceled"
 )
 
 // CLIError represents a structured error with a machine-readable code
@@ -75,6 +79,24 @@ func NewInvalidFormatError(message string) *CLIError {
 	}
 }
 
+// NewTimeoutError creates a request timeout error
+func NewTimeoutError(message string) *CLIError {
+	return &CLIError{
+		Message:  message,
+		Code:     CodeTimeout,
+		ExitCode: ExitAPI,
+	}
+}
+
+// NewCanceledError creates a request cancellation error
+func NewCanceledError(message string) *CLIError {
+	return &CLIError{
+		Message:  message,
+		Code:     CodeCanceled,
+		ExitCode: ExitAPI,
+	}
+}
+
 // wrapError converts known error types into CLIError
 func wrapError(err error) error {
 	if err == nil {
@@ -87,6 +109,17 @@ func wrapError(err error) error {
 	if errors.As(err, &authErr) {
 		return NewAuthError(authErr.Message)
 	}
+	var reqErr *client.RequestError
+	if errors.As(err, &reqErr) {
+		if reqErr.Timeout {
+			return NewTimeoutError(reqErr.Message)
+		}
+		if reqErr.Canceled {
+			return NewCanceledError(reqErr.Message)
+		}
+		// Other transport failures keep the general exit code, matching
+		// the behavior before request errors were typed.
+	}
 	var apiErr *client.APIError
 	if errors.As(err, &apiErr) {
 		return NewAPIError(apiErr.Message)
@@ -98,14 +131,33 @@ func wrapError(err error) error {
 	return err
 }
 
-// writeErrorOutput writes the error to stderr in the appropriate format
+// writeErrorOutput writes the error to stderr in the appropriate format.
+// All output is run through token redaction as a defense-in-depth measure so
+// that even an error message constructed outside the client never leaks the
+// Sentry API token.
 func writeErrorOutput(w io.Writer, err error, format string) {
 	wrapped := wrapError(err)
+	secret := loadSecretForRedaction()
 	if cliErr, ok := wrapped.(*CLIError); ok && (format == "json" || format == "ndjson") {
+		cliErr.Message = redact.Secret(cliErr.Message, secret)
 		json.NewEncoder(w).Encode(cliErr)
 	} else {
-		fmt.Fprintf(w, "Error: %v\n", err)
+		fmt.Fprintf(w, "Error: %s\n", redact.Secret(err.Error(), secret))
 	}
+}
+
+// loadSecretForRedaction returns the configured Sentry API token, falling back
+// to the config file when the env var is unset. Returns "" if neither is set,
+// in which case redaction is a no-op.
+func loadSecretForRedaction() string {
+	if t := os.Getenv("SENTRY_API_TOKEN"); t != "" {
+		return t
+	}
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		return ""
+	}
+	return cfg.SentryAPIToken
 }
 
 // exitCodeFromError returns the appropriate exit code for an error

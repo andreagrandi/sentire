@@ -1,12 +1,17 @@
 package client
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/andreagrandi/sentire/internal/config"
+	"github.com/andreagrandi/sentire/internal/redact"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
-	"sentire/internal/config"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -15,6 +20,11 @@ import (
 const (
 	BaseURL   = "https://sentry.io/api/0"
 	UserAgent = "sentire/1.0.0"
+
+	// DefaultTimeout bounds a single API request, including reading the
+	// response body. It applies to every command unless the caller's
+	// context carries an earlier deadline.
+	DefaultTimeout = 30 * time.Second
 )
 
 // Client represents the Sentry API client
@@ -58,6 +68,49 @@ func (e *APIError) Error() string {
 	return e.Message
 }
 
+// RequestError represents a transport-level request failure. Timeout and
+// Canceled distinguish the two cases the CLI reports specially; both are
+// false for other transport failures (DNS, connection refused, etc.).
+type RequestError struct {
+	Message  string
+	Timeout  bool
+	Canceled bool
+}
+
+func (e *RequestError) Error() string {
+	return e.Message
+}
+
+// requestErrorIfContext classifies err as a timeout or cancellation when it
+// originates from a context deadline, a context cancellation, or any other
+// network timeout. It returns nil when err is none of these.
+func requestErrorIfContext(err error) *RequestError {
+	switch {
+	case errors.Is(err, context.Canceled):
+		return &RequestError{Message: "request canceled", Canceled: true}
+	case errors.Is(err, context.DeadlineExceeded):
+		return &RequestError{Message: "request timed out", Timeout: true}
+	}
+
+	var netErr net.Error
+	if errors.As(err, &netErr) && netErr.Timeout() {
+		return &RequestError{Message: "request timed out", Timeout: true}
+	}
+
+	return nil
+}
+
+// classifyRequestError converts a transport error from the HTTP client into a
+// RequestError, separating timeouts and cancellations from other failures.
+func classifyRequestError(err error, token string) *RequestError {
+	if reqErr := requestErrorIfContext(err); reqErr != nil {
+		return reqErr
+	}
+	// Transport errors come from net/http and may include the request URL;
+	// strip the token defensively in case it ever surfaces in a wrapped error.
+	return &RequestError{Message: fmt.Sprintf("http request failed: %s", redact.Secret(err.Error(), token))}
+}
+
 // NewClient creates a new Sentry API client
 func NewClient() (*Client, error) {
 	cfg, err := config.LoadConfig()
@@ -66,13 +119,24 @@ func NewClient() (*Client, error) {
 	}
 
 	return &Client{
-		BaseURL: BaseURL,
+		BaseURL: resolveBaseURL(),
 		HTTPClient: &http.Client{
-			Timeout: 30 * time.Second,
+			Timeout: DefaultTimeout,
 		},
 		Token:     cfg.SentryAPIToken,
 		RateLimit: &RateLimiter{},
 	}, nil
+}
+
+// resolveBaseURL returns the API base URL. The SENTRY_API_BASE_URL environment
+// variable overrides the hosted default, so the CLI can target a self-hosted
+// Sentry instance or a local mock server. A trailing slash is trimmed so it
+// joins cleanly with endpoint paths.
+func resolveBaseURL() string {
+	if override := os.Getenv("SENTRY_API_BASE_URL"); override != "" {
+		return strings.TrimRight(override, "/")
+	}
+	return BaseURL
 }
 
 // Do executes an HTTP request and returns the response
@@ -84,7 +148,7 @@ func (c *Client) Do(req *http.Request) (*Response, error) {
 
 	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("http request failed: %w", err)
+		return nil, classifyRequestError(err, c.Token)
 	}
 
 	// Parse rate limit headers
@@ -103,7 +167,7 @@ func (c *Client) Do(req *http.Request) (*Response, error) {
 		defer resp.Body.Close()
 		body, _ := io.ReadAll(resp.Body)
 		return response, &APIError{
-			Message:    fmt.Sprintf("API request failed with status %d: %s", resp.StatusCode, string(body)),
+			Message:    fmt.Sprintf("API request failed with status %d: %s", resp.StatusCode, redact.Secret(string(body), c.Token)),
 			StatusCode: resp.StatusCode,
 		}
 	}
@@ -111,14 +175,19 @@ func (c *Client) Do(req *http.Request) (*Response, error) {
 	return response, nil
 }
 
-// Get performs a GET request
-func (c *Client) Get(endpoint string, params url.Values) (*Response, error) {
+// Get performs a context-aware GET request. The context propagates
+// cancellation and any deadline from the caller into the HTTP request.
+func (c *Client) Get(ctx context.Context, endpoint string, params url.Values) (*Response, error) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+
 	fullURL := c.BaseURL + endpoint
 	if params != nil {
 		fullURL += "?" + params.Encode()
 	}
 
-	req, err := http.NewRequest("GET", fullURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fullURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
@@ -131,6 +200,11 @@ func (c *Client) DecodeJSON(resp *Response, v interface{}) error {
 	defer resp.Body.Close()
 
 	if err := json.NewDecoder(resp.Body).Decode(v); err != nil {
+		// A timeout or cancellation while streaming the body surfaces here
+		// rather than from Do; report it as the request error it is.
+		if reqErr := requestErrorIfContext(err); reqErr != nil {
+			return reqErr
+		}
 		return fmt.Errorf("failed to decode JSON response: %w", err)
 	}
 

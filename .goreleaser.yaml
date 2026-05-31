@@ -23,7 +23,7 @@ builds:
       - goos: windows
         goarch: arm64
     ldflags:
-      - -s -w -X sentire/internal/version.Version={{.Version}}
+      - -s -w -X github.com/andreagrandi/sentire/internal/version.Version={{.Version}}
 
 archives:
   - name_template: >-
