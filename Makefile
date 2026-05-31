@@ -1,4 +1,4 @@
-.PHONY: build test clean install help vet
+.PHONY: build test clean install help vet smoke-install smoke-release
 
 # Default target
 all: build
@@ -63,6 +63,16 @@ install: build
 	@echo "Installing sentire..."
 	@cp sentire $(GOPATH)/bin/
 
+# Run the `go install` smoke test (mirrors the public install path)
+smoke-install:
+	@echo "Running go install smoke test..."
+	@go test ./tests/ -run TestGoInstallSmoke -v -count=1
+
+# Run the goreleaser snapshot smoke test (requires goreleaser locally)
+smoke-release:
+	@echo "Running release artifact smoke test..."
+	@SENTIRE_SMOKE_RELEASE=1 go test ./tests/ -run TestGoreleaserSnapshotSmoke -v -count=1 -timeout 10m
+
 # Cross-compile for multiple platforms
 build-all:
 	@echo "Building for multiple platforms..."
@@ -85,4 +95,6 @@ help:
 	@echo "  vet           - Run go vet static analysis"
 	@echo "  lint          - Lint code (requires golangci-lint)"
 	@echo "  install       - Install binary to GOPATH/bin"
+	@echo "  smoke-install - Run go install smoke test against the local module"
+	@echo "  smoke-release - Build a goreleaser snapshot and smoke-test the archive (requires goreleaser)"
 	@echo "  help          - Show this help message"

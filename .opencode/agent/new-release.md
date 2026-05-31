@@ -4,7 +4,10 @@ mode: subagent
 ---
 
 When asked to create a new release, you need to:
-- Make sure `make test` passes without errors
+- Make sure `make test` passes without errors (this also runs the
+  `go install` smoke test via `TestGoInstallSmoke`)
+- If `goreleaser` is installed locally, also run `make smoke-release` to
+  verify the release artifacts build and the unpacked binary works
 - Use the provided version number or
   Bump the version number in internal/version/version.go:
   if you find `const Version = "0.1.0"` change to `const Version = "0.1.1"`
@@ -13,3 +16,6 @@ When asked to create a new release, you need to:
 - git push the changes you just did
 - do `git tag v<version>` (use the version you just bumped to in the `internal/version/version.go`)
 - do `git push origin v<version>`
+- After the GitHub `Release` workflow finishes, run the post-release
+  verification checklist in `docs/releases.md` (GitHub artifact, `go install`,
+  and Homebrew)
