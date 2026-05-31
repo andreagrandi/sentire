@@ -12,6 +12,7 @@ All notable changes to Sentire will be documented in this file.
 - Contributor and agent guidance for keeping `CHANGELOG.md` updated, plus a PR template prompting for an `[Unreleased]` entry
 - `docs/workflows.md` with recipe-style triage, inspection, and reporting workflows plus a troubleshooting checklist for auth, permissions, filters, and empty results
 - `Ctrl+C` (SIGINT) and SIGTERM cancel in-flight API requests, reported with a `canceled` error code
+- `docs/releases.md` with the release pipeline overview and a post-release verification checklist for `go install`, GitHub artifacts, and the Homebrew tap
 
 ### Changed
 - Request timeouts surface a clear `timeout` error code instead of a generic transport failure
@@ -27,6 +28,7 @@ All notable changes to Sentire will be documented in this file.
 - Lower `go.mod` minimum to Go 1.24 and add Go 1.24/1.25 to the CI build matrix
 - API requests use context-aware HTTP request creation, propagating cancellation and deadlines from CLI commands into the client
 - Add `make vet` target and CI step running `go vet ./...`
+- Add install smoke tests: `TestGoInstallSmoke` (runs by default) verifies the public `go install` path, and `make smoke-release` runs an opt-in goreleaser snapshot smoke test against the unpacked archive
 
 ## [0.3.0] - 2026-03-07
 

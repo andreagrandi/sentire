@@ -33,3 +33,6 @@ go.work.sum
 
 # Sentire
 sentire
+
+# GoReleaser snapshot output
+dist/

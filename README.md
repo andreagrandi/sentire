@@ -388,6 +388,12 @@ To bypass the hook temporarily (not recommended):
 git commit --no-verify
 ```
 
+## Releases
+
+See [`docs/releases.md`](docs/releases.md) for the release pipeline overview
+and the post-release verification checklist for `go install`, the GitHub
+release artifacts, and the Homebrew tap.
+
 ## Changelog
 
 User-visible changes are tracked in [`CHANGELOG.md`](CHANGELOG.md). When you
